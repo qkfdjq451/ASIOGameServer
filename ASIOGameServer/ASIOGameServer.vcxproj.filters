@@ -1,33 +1,173 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Asio">
+      <UniqueIdentifier>{19116acc-79d1-4ace-9cf9-221079fd4689}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Asio\Session">
+      <UniqueIdentifier>{07234a34-d4ce-44bb-ad38-527bb1b5ceff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Asio\Session\SessionState">
+      <UniqueIdentifier>{a5842f08-1307-411a-99f0-805e773c9f81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cipher">
+      <UniqueIdentifier>{b5ac0b73-8d2c-4203-926e-661ee37113d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component">
+      <UniqueIdentifier>{c64342d5-35e1-4d15-9071-bdc62bee3ad4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WorkerGruop">
+      <UniqueIdentifier>{267295ad-c72f-4a71-baba-2fd34a3306ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DB">
+      <UniqueIdentifier>{de9d435b-5d68-48f8-9b6a-9456342647e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DB\Mysql">
+      <UniqueIdentifier>{488ce801-f7d4-4b90-b153-38b73fbfb33d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DB\MongoDB">
+      <UniqueIdentifier>{c08240c3-891b-41ad-9f6e-2fd2ed55af28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FlatBuffer">
+      <UniqueIdentifier>{346b044e-7353-42a2-953d-a23f432c306c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EventManager">
+      <UniqueIdentifier>{8687144f-f74e-4fec-b362-7b107f253e44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log">
+      <UniqueIdentifier>{70953cbb-2e78-45f9-bb40-66159c61ce5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="User">
+      <UniqueIdentifier>{a8cac0d1-6621-4350-93fc-04a2eb223c9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map">
+      <UniqueIdentifier>{84740564-63b2-4f7c-9219-46d4de2b9a15}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
+    <ClCompile Include="Asio\Asio.cpp">
+      <Filter>Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="Asio\Session\Session.cpp">
+      <Filter>Asio\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="Asio\Session\SessionManager.cpp">
+      <Filter>Asio\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="Asio\Session\SessionState\InGameState.cpp">
+      <Filter>Asio\Session\SessionState</Filter>
+    </ClCompile>
+    <ClCompile Include="Asio\Session\SessionState\SessionState.cpp">
+      <Filter>Asio\Session\SessionState</Filter>
+    </ClCompile>
+    <ClCompile Include="Cipher\CipherManager.cpp">
+      <Filter>Cipher</Filter>
+    </ClCompile>
+    <ClCompile Include="Component\Component.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="WorkerGruop\WorkerGruop.cpp">
+      <Filter>WorkerGruop</Filter>
+    </ClCompile>
+    <ClCompile Include="Mysql\MysqlPool.cpp">
+      <Filter>DB\Mysql</Filter>
+    </ClCompile>
+    <ClCompile Include="EventManager\EventManager.cpp">
+      <Filter>EventManager</Filter>
+    </ClCompile>
+    <ClCompile Include="EventManager\TimeManager.cpp">
+      <Filter>EventManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Log\LogManager.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="User\User.cpp">
+      <Filter>User</Filter>
+    </ClCompile>
+    <ClCompile Include="User\UserManager.cpp">
+      <Filter>User</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MongoDB\MongoDB.cpp">
+      <Filter>DB\MongoDB</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\MapManager.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\MapInfo.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Mysql\MysqlManager.cpp">
+      <Filter>DB\Mysql</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ASIOGameServer.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
+    <ClInclude Include="Asio\Asio.h">
+      <Filter>Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="Asio\Session\Session.h">
+      <Filter>Asio\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="Asio\Session\SessionManager.h">
+      <Filter>Asio\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="Asio\Session\SessionState\InGameState.h">
+      <Filter>Asio\Session\SessionState</Filter>
+    </ClInclude>
+    <ClInclude Include="Asio\Session\SessionState\SessionState.h">
+      <Filter>Asio\Session\SessionState</Filter>
+    </ClInclude>
+    <ClInclude Include="Cipher\CipherManager.h">
+      <Filter>Cipher</Filter>
+    </ClInclude>
+    <ClInclude Include="Component\Component.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="WorkerGruop\WorkerGruop.h">
+      <Filter>WorkerGruop</Filter>
+    </ClInclude>
+    <ClInclude Include="Mysql\MysqlPool.h">
+      <Filter>DB\Mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager\EventManager.h">
+      <Filter>EventManager</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager\React.h">
+      <Filter>EventManager</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager\TimeManager.h">
+      <Filter>EventManager</Filter>
+    </ClInclude>
+    <ClInclude Include="FlatBuffer\FBChat_generated.h">
+      <Filter>FlatBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="FlatBuffer\FBPlayer_generated.h">
+      <Filter>FlatBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Log\LogManager.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="User\User.h">
+      <Filter>User</Filter>
+    </ClInclude>
+    <ClInclude Include="User\UserManager.h">
+      <Filter>User</Filter>
+    </ClInclude>
+    <ClInclude Include="Flag.h" />
+    <ClInclude Include="Global.h" />
+    <ClInclude Include="Structs.h" />
+    <ClInclude Include="MongoDB\MongoDB.h">
+      <Filter>DB\MongoDB</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet.h" />
+    <ClInclude Include="Map\MapManager.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\MapInfo.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Mysql\MysqlManager.h">
+      <Filter>DB\Mysql</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
