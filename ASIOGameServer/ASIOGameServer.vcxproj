@@ -33,7 +33,12 @@
     <ClCompile Include="Map\MapInfo.cpp" />
     <ClCompile Include="Map\MapManager.cpp" />
     <ClCompile Include="MongoDB\MongoDB.cpp" />
-    <ClCompile Include="Mysql\MysqlManager.cpp" />
+    <ClCompile Include="Mysql\MysqlManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Mysql\MysqlPool.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
@@ -63,7 +68,12 @@
     <ClInclude Include="Map\MapInfo.h" />
     <ClInclude Include="Map\MapManager.h" />
     <ClInclude Include="MongoDB\MongoDB.h" />
-    <ClInclude Include="Mysql\MysqlManager.h" />
+    <ClInclude Include="Mysql\MysqlManager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Mysql\MysqlPool.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>

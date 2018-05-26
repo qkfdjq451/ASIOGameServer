@@ -1,4 +1,5 @@
 #include "../Global.h"
+#include "MysqlManager.h"
 #include "MysqlPool.h"
 
 
@@ -7,14 +8,16 @@ std::mutex MysqlPool::poollock;
 
 MysqlPool::MysqlPool() {}
 
-void MysqlPool::setParameter(const char*   mysqlhost,
+void MysqlPool::setParameter(
+	const char*   mysqlhost,
 	const char*   mysqluser,
 	const char*   mysqlpwd,
 	const char*   databasename,
 	unsigned int  port,
 	const char*   socket,
 	unsigned long client_flag,
-	unsigned int  max_connect) {
+	unsigned int  max_connect) 
+{
 	_mysqlhost = mysqlhost;
 	_mysqluser = mysqluser;
 	_mysqlpwd = mysqlpwd;
@@ -29,7 +32,8 @@ MYSQL* MysqlPool::createOneConnect() {
 	MYSQL* conn = NULL;
 	conn = mysql_init(conn);
 	if (conn != NULL) {
-		if (mysql_real_connect(conn,
+		if (mysql_real_connect(
+			conn,
 			_mysqlhost,
 			_mysqluser,
 			_mysqlpwd,
@@ -118,46 +122,103 @@ void MysqlPool::close(MYSQL* conn)
 	}
 }
 
-std::map<const std::string, std::vector<const char*> >  MysqlPool::executeSql(const char* sql) 
+std::map<const std::string, std::vector<const char*> >  MysqlPool::executeSql_Map(const char* sql)
 {
 	MYSQL* conn = getOneConnect();
 	std::map<const std::string, std::vector<const char*> > results;
-	if (conn) {
-		if (mysql_query(conn, sql) == 0) {
+	if (conn) 
+	{
+		if (mysql_query(conn, sql) == 0) 
+		{
 			MYSQL_RES *res = mysql_store_result(conn);
-			if (res) {
+			if (res) 
+			{
 				MYSQL_FIELD *field;
-				while ((field = mysql_fetch_field(res))) {
+				while ((field = mysql_fetch_field(res))) 
+				{
 					results.insert(make_pair(field->name, std::vector<const char*>()));
 				}
 				MYSQL_ROW row;
-				while ((row = mysql_fetch_row(res))) {
+				while ((row = mysql_fetch_row(res))) 
+				{
 					unsigned int i = 0;
-					for (std::map<const std::string, std::vector<const char*> >::iterator it = results.begin();
-						it != results.end(); ++it) {
+					for (auto it = results.begin(); it != results.end(); ++it) 
+					{
 						(it->second).push_back(row[i++]);
 					}
 				}
 				mysql_free_result(res);
 			}
-			else {
+			else 
+			{
 				if (mysql_field_count(conn) != 0)
 					std::cerr << mysql_error(conn) << std::endl;
 			}
 		}
-		else {
+		else 
+		{
 			std::cerr << mysql_error(conn) << std::endl;
 		}
 		close(conn);
 	}
-	else {
+	else 
+	{
 		std::cerr << mysql_error(conn) << std::endl;
 	}
 	return results;
 }
 
-MysqlPool::~MysqlPool() {
-	while (poolSize() != 0) {
+std::vector<std::vector<std::string>> MysqlPool::executeSql_Vector(const char * sql)
+{
+	MYSQL* conn = getOneConnect();
+	std::vector<std::vector<std::string>> result;
+	if (conn)
+	{
+		if (mysql_query(conn, sql) == 0)
+		{
+			MYSQL_RES *res = mysql_store_result(conn);
+			if (res)
+			{
+				MYSQL_ROW row;
+				int fieldCount = mysql_num_fields(res);
+				while ((row = mysql_fetch_row(res)))
+				{
+					std::vector<std::string> vec;
+					for (int i = 0; i < fieldCount; i++)
+					{
+						vec.push_back(row[i]);
+					}
+					result.push_back(move(vec));
+				}
+			}
+			else
+			{
+				std::cerr << mysql_error(conn) << std::endl;
+			}
+		}
+		close(conn);
+	}
+	return move(result);
+}
+
+void MysqlPool::executeSql(const char * sql)
+{
+	MYSQL* conn = getOneConnect();
+	if (conn)
+	{
+
+	}
+	else
+	{
+		std::cerr << mysql_error(conn) << std::endl;
+	}
+	close(conn);
+}
+
+MysqlPool::~MysqlPool() 
+{
+	while (poolSize() != 0) 
+	{
 		mysql_close(poolFront());
 		poolPop();
 		connect_count--;

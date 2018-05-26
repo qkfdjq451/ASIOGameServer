@@ -4,10 +4,11 @@ class WorkerGruop
 public:
 	static WorkerGruop* Get_IOGroup() { return ioGroup.get(); }
 	static WorkerGruop* Get_InGameGroup() { return ingameGroup.get(); }
-
+	static WorkerGruop* Get_MySQL() { return mysqlGroup.get(); }
 private:
 	static std::unique_ptr<WorkerGruop> ioGroup;
 	static std::unique_ptr<WorkerGruop> ingameGroup;
+	static std::unique_ptr<WorkerGruop> mysqlGroup;
 	
 public:
 	WorkerGruop(asio::io_service& io);

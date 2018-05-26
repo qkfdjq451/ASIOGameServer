@@ -11,11 +11,10 @@ union RecvBuffer
 	} packet;
 };
 
-struct SendBuffer
+struct SendBuffer : public std::enable_shared_from_this<SendBuffer>
 {
 	SendBuffer(const PS& symbol, std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb)
 	{
-		com_sendSize = 0;
 		buffer.packet.size = fbb->GetSize() + sizeof(unsigned short) + sizeof(PS);
 
 		buffer.packet.symbol = symbol;
@@ -23,8 +22,7 @@ struct SendBuffer
 	}
 
 	SendBuffer(const PS& symbol, void* buffer_pointer, short buffersize)
-	{
-		com_sendSize = 0;
+	{		
 		buffer.packet.size = buffersize + sizeof(unsigned short) + sizeof(PS);
 
 		buffer.packet.symbol = symbol;
@@ -42,7 +40,7 @@ struct SendBuffer
 		} packet;
 	} buffer;
 
-	unsigned short com_sendSize;
+	//unsigned short com_sendSize;
 };
 
 class Func
@@ -58,14 +56,15 @@ public:
 	Function(std::function<void(T)> fun, T param) :
 		data(param), fun(fun)
 	{}
-private:
-	std::function<void(T)> fun;
-	T data;
 	void func()
 	{
 		fun(data);
 	}
+private:
+	std::function<void(T)> fun;
+	T data;	
 };
+
 
 template<>
 class Function<void>

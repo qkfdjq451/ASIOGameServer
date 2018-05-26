@@ -6,3 +6,10 @@ enum class EResult : char
 	COMPLETE = 0,
 	OVER = 1
 };
+
+enum class MapType : char
+{
+	None,
+	Town,
+	Dungeoun
+};

@@ -24,6 +24,8 @@ typedef unsigned char 		uint8;
 #include <string>
 #include<utility>
 #include <mutex>
+#include <future>
+
 
 #include "./Packet.h"
 
@@ -32,6 +34,7 @@ typedef unsigned char 		uint8;
 
 #include "Asio/Asio.h"
 
+#include "EventManager/React.h"
 
 #include "./Component/Component.h"
 #include "./WorkerGruop/WorkerGruop.h"

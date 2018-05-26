@@ -15,6 +15,7 @@ public:
 	void SetUser(std::shared_ptr<class User> user);
 
 	//POST
+	void PushSend(std::shared_ptr<struct SendBuffer> sb);
 	void PushSend(const PS& symbol, void* buffer_pointer, short buffersize);
 	void PushSend(const PS & symbol, std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb);
 	std::weak_ptr<class User> GetUser() { return user; }
@@ -39,8 +40,10 @@ private:
 	RecvBuffer recv_buffer;
 	unsigned short com_recvSize;
 
-	std::queue<SendBuffer*> send_buffers;
-	SendBuffer* current_send_buffer;
+	std::queue<std::shared_ptr<SendBuffer>> send_buffers;
+	std::shared_ptr<SendBuffer> current_send_buffer;
+
+	unsigned short com_sendSize;
 private:
 	//State
 	class SessionState* currentState;

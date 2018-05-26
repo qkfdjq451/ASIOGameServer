@@ -8,9 +8,13 @@
 class MysqlPool 
 {
 public:
+	friend class MySQLManager;
+	MysqlPool();
 	~MysqlPool();
-	std::map<const std::string, std::vector<const char* > > executeSql(const char* sql);
-	static MysqlPool* getMysqlPoolObject();
+	std::map<const std::string, std::vector<const char* >> executeSql_Map(const char* sql);
+	std::vector<std::vector<std::string>> executeSql_Vector(const char* sql);
+	void executeSql(const char* sql);
+
 	void setParameter(const char*   _mysqlhost,
 		const char*   _mysqluser,
 		const char*   _mysqlpwd,
@@ -20,7 +24,6 @@ public:
 		unsigned long _client_flag = 0,
 		unsigned int  MAX_CONNECT = 50);
 private:
-	MysqlPool();
 	MYSQL* createOneConnect();
 	MYSQL* getOneConnect();
 	void close(MYSQL* conn);

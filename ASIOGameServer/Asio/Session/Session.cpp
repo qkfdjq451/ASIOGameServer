@@ -91,8 +91,7 @@ void Session::do_write()
 	auto self(shared_from_this());
 
 	strand_.post([this, self]()
-	{
-
+	{	
 		if (current_send_buffer == nullptr)
 		{
 			if (send_buffers.empty() == true)
@@ -107,8 +106,8 @@ void Session::do_write()
 		}
 
 		socket_.async_write_some(asio::buffer(
-			&current_send_buffer->buffer.start_pointer + current_send_buffer->com_sendSize,
-			current_send_buffer->buffer.packet.size - current_send_buffer->com_sendSize)
+			&current_send_buffer->buffer.start_pointer + com_sendSize,
+			current_send_buffer->buffer.packet.size - com_sendSize)
 		,[this, self](std::error_code ec, std::size_t length)
 		{
 			auto retval = SendResult(*current_send_buffer, length);
@@ -119,7 +118,7 @@ void Session::do_write()
 				break;
 			case EResult::COMPLETE:
 				send_buffers.pop();
-				delete current_send_buffer;
+				com_sendSize = 0;				
 				current_send_buffer = nullptr;
 				do_write();
 				break;
@@ -152,17 +151,28 @@ EResult Session::RecvResult( std::size_t length)
 
 EResult Session::SendResult(SendBuffer& send_buffer,std::size_t length)
 {
-	send_buffer.com_sendSize += length;
-	if (send_buffer.com_sendSize < sizeof(unsigned short))
+	com_sendSize += length;
+	if (com_sendSize < sizeof(unsigned short))
 	{
 		return EResult::LOW;
 	}
 	//받아야할 데이터와 받은 데이터의 양이 같을 때 
-	if (send_buffer.buffer.packet.size == send_buffer.com_sendSize)
+	if (send_buffer.buffer.packet.size == com_sendSize)
 	{
 		return EResult::COMPLETE;
 	}
 	return EResult::LOW;
+}
+
+void Session::PushSend(std::shared_ptr<struct SendBuffer> sb)
+{
+	auto self(shared_from_this());
+
+	strand_.post([this, self, sb]
+	{
+		send_buffers.push(sb);
+		do_write();
+	});
 }
 
 void Session::PushSend(const PS & symbol, void * buffer_pointer, short buffersize)
@@ -171,7 +181,7 @@ void Session::PushSend(const PS & symbol, void * buffer_pointer, short buffersiz
 
 	strand_.post([this, self, buffer_pointer, symbol, buffersize]
 	{
-		send_buffers.push(new SendBuffer(symbol, buffer_pointer, buffersize));
+		send_buffers.push(std::make_shared<SendBuffer>(symbol, buffer_pointer, buffersize));
 		do_write();
 	});
 
@@ -183,7 +193,7 @@ void Session::PushSend(const PS & symbol, std::shared_ptr<flatbuffers::FlatBuffe
 
 	strand_.post([this, self, symbol,fbb]
 	{
-		send_buffers.push(new SendBuffer(symbol,move(fbb)));
+		send_buffers.push(std::make_shared<SendBuffer>(symbol,move(fbb)));
 		do_write();
 	});
 }
