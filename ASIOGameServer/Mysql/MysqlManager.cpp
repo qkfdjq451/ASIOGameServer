@@ -15,18 +15,57 @@ MySQLManager::~MySQLManager()
 
 }
 
-void MySQLManager::Query(const char * sql)
+const char * MySQLManager::Select_UserCharacter(int char_code)
 {
-	mysql_pool->executeSql_Vector(sql);
+	char sql[256];
+	sprintf_s(sql,"select * from UserCharacter natural join CharacterPosion where UserCharacter.CharacterCode = %d;", char_code);
+	return sql;
 }
 
-void MySQLManager::Query_Result_Promise_Map(const char * sql, std::promise<QMap>& result)
+void MySQLManager::Async_Query(const char * sql, std::function<void(QVector&, bool)> func)
 {
-	auto retval = mysql_pool->executeSql_Map(sql);
-	result.set_value(move(retval));
+	std::async(std::launch::async, [this, sql, func]
+	{
+		QVector vec;
+		auto result = mysql_pool->executeSql_Vector(sql, std::ref(vec));
+		func(std::ref(vec), result);
+	});
 }
-void MySQLManager::Query_Result_Promise_Vector(const char * sql, std::promise<QVector>& result)
+
+QVector MySQLManager::Query(const char * sql)
 {
-	auto retval = mysql_pool->executeSql_Vector(sql);
-	result.set_value(move(retval));
+	QVector vec;
+	auto result = mysql_pool->executeSql_Vector(sql, std::ref(vec));
+	return std::move(vec);
 }
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////SingleTon
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+MySQLManager* MySQLManager::inst = nullptr;
+
+bool MySQLManager::Create()
+{
+	if (inst == nullptr)
+	{
+		inst = new MySQLManager();
+		return true;
+	}
+	return false;
+}
+
+bool MySQLManager::Delete()
+{
+	if (inst != nullptr)
+	{
+		delete inst;
+		inst = nullptr;
+		return true;
+	}
+	return false;
+}
+

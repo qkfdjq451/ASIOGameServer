@@ -5,6 +5,10 @@
 #include "../User/UserManager.h"
 #include "../User/User.h"
 
+#include "../Map/MapInfo.h"
+#include "../Map/MapManager.h"
+
+
 server::server(asio::io_service & io_service, short port)
 	: acceptor_(io_service, tcp::endpoint(tcp::v4(), port)),
 	socket_(io_service)
@@ -27,6 +31,8 @@ void server::NewUser(std::shared_ptr<SUTuple> su)
 
 	user->SetSession(session);
 	session->SetUser(user);
+
+
 	key++;
 }
 
@@ -38,7 +44,7 @@ void server::do_accept()
 	{
 		if (!ec) 
 		{
-			auto root = WorkerGruop::Get_IOGroup()->GetRoot();
+			auto root = WorkerGroup::Get_IOGroup();
 			auto sm = root->GetComponent<SessionManager>();
 			auto um = root->GetComponent<UserManager>();
 
@@ -46,7 +52,7 @@ void server::do_accept()
 
 			auto newuserFunc = std::make_shared<Function<std::shared_ptr<SUTuple >>>(
 				bind(&server::NewUser, this, std::placeholders::_1),move(su));
-			WorkerGruop::Get_IOGroup()->PostFuction(newuserFunc);
+			WorkerGroup::Get_IOGroup()->PostFuction(newuserFunc);
 		}
 		//¿Á±Õ»£√‚¿Ã æ∆¥‘.
 		do_accept();

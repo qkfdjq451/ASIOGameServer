@@ -1,18 +1,20 @@
 #pragma once
 
 #pragma comment(lib, "libmysql.lib")
-
 #include <mysql.h>
 
 
 class MysqlPool 
 {
 public:
+	
 	friend class MySQLManager;
 	MysqlPool();
 	~MysqlPool();
-	std::map<const std::string, std::vector<const char* >> executeSql_Map(const char* sql);
-	std::vector<std::vector<std::string>> executeSql_Vector(const char* sql);
+	QMap executeSql_Map(const char* sql);
+	QVector executeSql_Vector(const char* sql);
+
+	bool executeSql_Vector(const char* sql, QVector& result);
 	void executeSql(const char* sql);
 
 	void setParameter(const char*   _mysqlhost,
@@ -23,6 +25,8 @@ public:
 		const char*   _socket = NULL,
 		unsigned long _client_flag = 0,
 		unsigned int  MAX_CONNECT = 50);
+
+
 private:
 	MYSQL* createOneConnect();
 	MYSQL* getOneConnect();

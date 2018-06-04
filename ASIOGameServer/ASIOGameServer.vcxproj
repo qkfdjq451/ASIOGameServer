@@ -23,11 +23,16 @@
     <ClCompile Include="Asio\Session\Session.cpp" />
     <ClCompile Include="Asio\Session\SessionManager.cpp" />
     <ClCompile Include="Asio\Session\SessionState\InGameState.cpp" />
+    <ClCompile Include="Asio\Session\SessionState\LoginState.cpp" />
     <ClCompile Include="Asio\Session\SessionState\SessionState.cpp" />
+    <ClCompile Include="Channel\Channel.cpp" />
+    <ClCompile Include="Character\Character.cpp" />
+    <ClCompile Include="Character\CharacterManager.cpp" />
     <ClCompile Include="Cipher\CipherManager.cpp" />
     <ClCompile Include="Component\Component.cpp" />
     <ClCompile Include="EventManager\EventManager.cpp" />
     <ClCompile Include="EventManager\TimeManager.cpp" />
+    <ClCompile Include="GameManager\GameManager.cpp" />
     <ClCompile Include="Log\LogManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map\MapInfo.cpp" />
@@ -45,24 +50,33 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="System\Time.cpp" />
     <ClCompile Include="User\User.cpp" />
     <ClCompile Include="User\UserManager.cpp" />
-    <ClCompile Include="WorkerGruop\WorkerGruop.cpp" />
+    <ClCompile Include="WorkerGroup\WorkerGroup.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asio\Asio.h" />
     <ClInclude Include="Asio\Session\Session.h" />
     <ClInclude Include="Asio\Session\SessionManager.h" />
     <ClInclude Include="Asio\Session\SessionState\InGameState.h" />
+    <ClInclude Include="Asio\Session\SessionState\LoginState.h" />
     <ClInclude Include="Asio\Session\SessionState\SessionState.h" />
+    <ClInclude Include="Channel\Channel.h" />
+    <ClInclude Include="Character\Character.h" />
+    <ClInclude Include="Character\CharacterManager.h" />
     <ClInclude Include="Cipher\CipherManager.h" />
     <ClInclude Include="Component\Component.h" />
     <ClInclude Include="EventManager\EventManager.h" />
     <ClInclude Include="EventManager\React.h" />
     <ClInclude Include="EventManager\TimeManager.h" />
     <ClInclude Include="Flag.h" />
-    <ClInclude Include="FlatBuffer\FBChat_generated.h" />
-    <ClInclude Include="FlatBuffer\FBPlayer_generated.h" />
+    <ClInclude Include="FlatBuffer\FB_Character_generated.h" />
+    <ClInclude Include="FlatBuffer\FB_chat_generated.h" />
+    <ClInclude Include="FlatBuffer\FB_generated.h" />
+    <ClInclude Include="FlatBuffer\FB_Map_generated.h" />
+    <ClInclude Include="FlatBuffer\FB_User_generated.h" />
+    <ClInclude Include="GameManager\GameManager.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="Log\LogManager.h" />
     <ClInclude Include="Map\MapInfo.h" />
@@ -82,9 +96,10 @@
     </ClInclude>
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Structs.h" />
+    <ClInclude Include="System\Time.h" />
     <ClInclude Include="User\User.h" />
     <ClInclude Include="User\UserManager.h" />
-    <ClInclude Include="WorkerGruop\WorkerGruop.h" />
+    <ClInclude Include="WorkerGroup\WorkerGroup.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

@@ -4,8 +4,8 @@
 using namespace std;
 using namespace std::chrono;
 
-TimeManager * TimeManager::inst = nullptr;
-void TimeManager::Run()
+TimerManager * TimerManager::inst = nullptr;
+void TimerManager::Run()
 {
 	t = new std::thread([this]
 	{
@@ -50,7 +50,7 @@ void TimeManager::Run()
 	});
 }
 
-bool TimeManager::InsertLoop(int id, long milliseconds, shared_ptr<Func> func)
+bool TimerManager::InsertLoop(int id, long milliseconds, shared_ptr<Func> func)
 {
 	Timer t;
 	t.start_clock = system_clock::now();
@@ -60,7 +60,7 @@ bool TimeManager::InsertLoop(int id, long milliseconds, shared_ptr<Func> func)
 	return result.second;
 }
 
-bool TimeManager::InsertTimer(int id, long milliseconds, shared_ptr<Func> func)
+bool TimerManager::InsertTimer(int id, long milliseconds, shared_ptr<Func> func)
 {
 	Timer t;
 	t.start_clock = system_clock::now();
@@ -70,7 +70,7 @@ bool TimeManager::InsertTimer(int id, long milliseconds, shared_ptr<Func> func)
 	return result.second;
 }
 
-bool TimeManager::RemoveLoop(int id)
+bool TimerManager::RemoveLoop(int id)
 {
 	auto result = m_LoopList.find(id);
 	if (result != m_LoopList.end())
@@ -81,7 +81,7 @@ bool TimeManager::RemoveLoop(int id)
 	return false;
 }
 
-bool TimeManager::RemoveTimer(int id)
+bool TimerManager::RemoveTimer(int id)
 {
 	auto result = m_TimerList.find(id);
 	if (result != m_TimerList.end())
@@ -92,25 +92,25 @@ bool TimeManager::RemoveTimer(int id)
 	return false;
 }
 
-TimeManager::TimeManager()
+TimerManager::TimerManager()
 {
 }
 
-TimeManager::~TimeManager()
+TimerManager::~TimerManager()
 {
 }
 
-bool TimeManager::Create()
+bool TimerManager::Create()
 {
 	if (inst == nullptr)
 	{
-		inst = new TimeManager();
+		inst = new TimerManager();
 		return true;
 	}
 	return false;
 }
 
-bool TimeManager::Delete()
+bool TimerManager::Delete()
 {
 	if (inst != nullptr)
 	{
@@ -121,7 +121,7 @@ bool TimeManager::Delete()
 	return false;
 }
 
-TimeManager * TimeManager::Get()
+TimerManager * TimerManager::Get()
 {
 	return inst;
 }

@@ -29,13 +29,13 @@ std::shared_ptr<class Session> SessionManager::CreateSession(tcp::socket socket,
 	return nullptr;
 }
 
-void SessionManager::Send_All_Session(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb)
-{	
-		for (auto & session : sessions)
-		{
-			//session.second->Send(fbb);
-		}
-}
+//void SessionManager::Send_All_Session(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb)
+//{	
+//		for (auto & session : sessions)
+//		{
+//			//session.second->PushSend(fbb);
+//		}
+//}
 
 bool SessionManager::RemoveSocket(int key)
 {

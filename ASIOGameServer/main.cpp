@@ -1,33 +1,33 @@
 #include "Global.h"
-#include "Mysql/MysqlPool.h"
 #include "MongoDB/MongoDB.h"
 #include <cpp_redis/cpp_redis>
 #include "Log/LogManager.h"
 #include "./Cipher/CipherManager.h"
 #include "./EventManager/TimeManager.h"
 #include "./EventManager/EventManager.h"
-
+#include"GameManager/GameManager.h"
 
 
 
 int main(int argc, char* argv[])
 {
-	TimeManager::Create();
+	MySQLManager::Create();
+	TimerManager::Create();
 	EventManager::Create();
-
+	auto gm = std::make_shared<GameManager>();
 	try 
 	{
 		asio::io_service io_service;
-		WorkerGruop::Create(io_service);
+		WorkerGroup::Create(io_service);
 		
 		server s(io_service, (short)std::atoi("8888"));
+		gm->SetTag("GameManager");
 
-		io_service.run();
+		vector<thread> threads;
+		for(int i=0;i<4;i++)
+			threads.push_back(thread([&] {io_service.run(); }));		
 
-		//vector<thread> threads;
-		//for(int i=0;i<5;i++)
-		//	threads.push_back(thread([&] {io_service.run(); }));		
-		
+		gm->Run();
 	}
 	catch (std::exception& e) 
 	{
@@ -35,7 +35,8 @@ int main(int argc, char* argv[])
 	}
 
 	EventManager::Delete();
-	TimeManager::Delete();
+	TimerManager::Delete();
+	MySQLManager::Delete();
 	return 0;
 	
 	//MysqlPool *mysql = MysqlPool::getMysqlPoolObject();

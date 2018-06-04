@@ -10,12 +10,12 @@ public:
 	{ 		
 		for (auto ev : prevEvents)
 		{
-			ev.second(_data);
+			ev.second(data);
 		}
 		data = _data; 
 		for (auto ev : postEvents)
 		{
-			ev.second(_data);
+			ev.second(data);
 		}
 	}
 	int InsertPrevEvent(std::function<void(T)> fun)

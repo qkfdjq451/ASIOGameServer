@@ -6,11 +6,14 @@ class UserManager : public Component ,public std::enable_shared_from_this<UserMa
 {
 public:
 	//Post 함수
-	std::shared_ptr<class User> CreateUser(int key);
-	bool InsertUser(std::shared_ptr<class User> user);
+	std::shared_ptr<class User> CreateUser(int key);	
 	void SendAllUsers(const PS & symbol, std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb);
 	
+
+	//전 UserManager에서 User 삭제
 	bool RemoveUser(int key);
+
+	void LoopFunction(std::function<void(std::shared_ptr<class User>)> func);
 
 private:
 	std::unordered_map<int, std::shared_ptr<class User>> users;

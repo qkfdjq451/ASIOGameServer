@@ -1,5 +1,34 @@
 #pragma once
 
+
+struct Vector3
+{
+	Vector3(float x = 0, float y = 0, float z = 0)
+		:x(x), y(y), z(z) {}
+	Vector3(std::string x, std::string y, std::string z )
+		:x((float)atof(x.c_str())), y((float)atof(y.c_str())), z((float)atof(z.c_str())) {}
+	FB::Vec3 ToFBVector3()
+	{
+		return FB::Vec3(x, y, z);
+	}
+	float x;
+	float y;
+	float z;
+};
+
+struct MoveData
+{
+	int userCode;
+	int userMap;
+
+	MoveType moveType;
+	Vector3 position;
+	Vector3 foward;
+	float speed;
+};
+
+
+
 union RecvBuffer
 {
 	uint8 buffer[BUFSIZE];
@@ -67,7 +96,7 @@ private:
 
 
 template<>
-class Function<void>
+class Function<void> :public Func
 {
 public:
 	Function(std::function<void()> fun)

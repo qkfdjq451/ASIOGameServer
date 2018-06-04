@@ -6,8 +6,6 @@
 #define BUFSIZE	1024
 #define _WIN32_WINNT  0x0603
 
-typedef unsigned int uint;
-typedef unsigned char 		uint8;
 
 
 #include <iostream>
@@ -25,6 +23,14 @@ typedef unsigned char 		uint8;
 #include<utility>
 #include <mutex>
 #include <future>
+#include <algorithm>
+
+//Typedef
+typedef unsigned int	uint;
+typedef unsigned char uint8;
+
+typedef std::map<const std::string, std::vector<const char*>> QMap;
+typedef std::vector<std::vector<std::pair<std::string,std::string>>> QVector;
 
 
 #include "./Packet.h"
@@ -32,9 +38,15 @@ typedef unsigned char 		uint8;
 #include "Flag.h"
 #include "Structs.h"
 
+#include "Log/LogManager.h"
+#include "System/Time.h"
+
 #include "Asio/Asio.h"
 
 #include "EventManager/React.h"
+#include "Mysql/MysqlManager.h"
+
 
 #include "./Component/Component.h"
-#include "./WorkerGruop/WorkerGruop.h"
+#include "./WorkerGroup//WorkerGroup.h"
+

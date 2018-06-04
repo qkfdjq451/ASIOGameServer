@@ -7,7 +7,7 @@ struct Timer
 	std::shared_ptr<class Func> work;
 };
 
-class TimeManager
+class TimerManager
 {
 public:
 	void Run();
@@ -19,15 +19,15 @@ public:
 	std::thread* GetThread() { return t; }
 private:
 	std::thread* t;
-	TimeManager();
-	~TimeManager();
+	TimerManager();
+	~TimerManager();
 
 
 	std::map<int, Timer> m_LoopList;
 	std::map<int, Timer> m_TimerList;
-	static TimeManager * inst;
+	static TimerManager * inst;
 public:
 	static bool Create();
 	static bool	Delete();
-	static TimeManager* Get();
+	static TimerManager* Get();
 };

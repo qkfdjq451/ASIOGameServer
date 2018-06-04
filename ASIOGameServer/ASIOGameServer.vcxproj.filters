@@ -1,6 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Component">
+      <UniqueIdentifier>{c64342d5-35e1-4d15-9071-bdc62bee3ad4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="User">
+      <UniqueIdentifier>{a8cac0d1-6621-4350-93fc-04a2eb223c9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System">
+      <UniqueIdentifier>{b500b5d7-699b-48fd-9f82-80bea0d00397}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagementClass">
+      <UniqueIdentifier>{c7544a25-81bd-4667-8da7-e32daa7d030d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagementClass\LogManager">
+      <UniqueIdentifier>{70953cbb-2e78-45f9-bb40-66159c61ce5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagementClass\CipherManager">
+      <UniqueIdentifier>{b5ac0b73-8d2c-4203-926e-661ee37113d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagementClass\DB">
+      <UniqueIdentifier>{de9d435b-5d68-48f8-9b6a-9456342647e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagementClass\DB\Mysql">
+      <UniqueIdentifier>{488ce801-f7d4-4b90-b153-38b73fbfb33d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagementClass\DB\MongoDB">
+      <UniqueIdentifier>{c08240c3-891b-41ad-9f6e-2fd2ed55af28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagementClass\EventManager">
+      <UniqueIdentifier>{8687144f-f74e-4fec-b362-7b107f253e44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagementClass\FlatBuffer">
+      <UniqueIdentifier>{346b044e-7353-42a2-953d-a23f432c306c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Asio">
       <UniqueIdentifier>{19116acc-79d1-4ace-9cf9-221079fd4689}</UniqueIdentifier>
     </Filter>
@@ -10,38 +43,20 @@
     <Filter Include="Asio\Session\SessionState">
       <UniqueIdentifier>{a5842f08-1307-411a-99f0-805e773c9f81}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Cipher">
-      <UniqueIdentifier>{b5ac0b73-8d2c-4203-926e-661ee37113d5}</UniqueIdentifier>
+    <Filter Include="Character">
+      <UniqueIdentifier>{7f637470-0bbf-472c-95b4-e5a2112317b0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component">
-      <UniqueIdentifier>{c64342d5-35e1-4d15-9071-bdc62bee3ad4}</UniqueIdentifier>
+    <Filter Include="Component\GameManager">
+      <UniqueIdentifier>{0bf2a45e-3453-4d5f-87f3-08110b72f66d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="WorkerGruop">
-      <UniqueIdentifier>{267295ad-c72f-4a71-baba-2fd34a3306ea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="DB">
-      <UniqueIdentifier>{de9d435b-5d68-48f8-9b6a-9456342647e7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="DB\Mysql">
-      <UniqueIdentifier>{488ce801-f7d4-4b90-b153-38b73fbfb33d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="DB\MongoDB">
-      <UniqueIdentifier>{c08240c3-891b-41ad-9f6e-2fd2ed55af28}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FlatBuffer">
-      <UniqueIdentifier>{346b044e-7353-42a2-953d-a23f432c306c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="EventManager">
-      <UniqueIdentifier>{8687144f-f74e-4fec-b362-7b107f253e44}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Log">
-      <UniqueIdentifier>{70953cbb-2e78-45f9-bb40-66159c61ce5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="User">
-      <UniqueIdentifier>{a8cac0d1-6621-4350-93fc-04a2eb223c9e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Map">
+    <Filter Include="Component\Map">
       <UniqueIdentifier>{84740564-63b2-4f7c-9219-46d4de2b9a15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Channel">
+      <UniqueIdentifier>{d6f4b89c-7010-49a5-90cf-cb0e308d5921}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WorkerGroup">
+      <UniqueIdentifier>{267295ad-c72f-4a71-baba-2fd34a3306ea}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -61,25 +76,22 @@
       <Filter>Asio\Session\SessionState</Filter>
     </ClCompile>
     <ClCompile Include="Cipher\CipherManager.cpp">
-      <Filter>Cipher</Filter>
+      <Filter>ManagementClass\CipherManager</Filter>
     </ClCompile>
     <ClCompile Include="Component\Component.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="WorkerGruop\WorkerGruop.cpp">
-      <Filter>WorkerGruop</Filter>
-    </ClCompile>
     <ClCompile Include="Mysql\MysqlPool.cpp">
-      <Filter>DB\Mysql</Filter>
+      <Filter>ManagementClass\DB\Mysql</Filter>
     </ClCompile>
     <ClCompile Include="EventManager\EventManager.cpp">
-      <Filter>EventManager</Filter>
+      <Filter>ManagementClass\EventManager</Filter>
     </ClCompile>
     <ClCompile Include="EventManager\TimeManager.cpp">
-      <Filter>EventManager</Filter>
+      <Filter>ManagementClass\EventManager</Filter>
     </ClCompile>
     <ClCompile Include="Log\LogManager.cpp">
-      <Filter>Log</Filter>
+      <Filter>ManagementClass\LogManager</Filter>
     </ClCompile>
     <ClCompile Include="User\User.cpp">
       <Filter>User</Filter>
@@ -89,16 +101,37 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MongoDB\MongoDB.cpp">
-      <Filter>DB\MongoDB</Filter>
-    </ClCompile>
-    <ClCompile Include="Map\MapManager.cpp">
-      <Filter>Map</Filter>
+      <Filter>ManagementClass\DB\MongoDB</Filter>
     </ClCompile>
     <ClCompile Include="Map\MapInfo.cpp">
-      <Filter>Map</Filter>
+      <Filter>Component\Map</Filter>
     </ClCompile>
     <ClCompile Include="Mysql\MysqlManager.cpp">
-      <Filter>DB\Mysql</Filter>
+      <Filter>ManagementClass\DB\Mysql</Filter>
+    </ClCompile>
+    <ClCompile Include="WorkerGroup\WorkerGroup.cpp">
+      <Filter>WorkerGroup</Filter>
+    </ClCompile>
+    <ClCompile Include="System\Time.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager\GameManager.cpp">
+      <Filter>Component\GameManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Character\Character.cpp">
+      <Filter>Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Character\CharacterManager.cpp">
+      <Filter>Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\MapManager.cpp">
+      <Filter>Component\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Channel\Channel.cpp">
+      <Filter>Component\Channel</Filter>
+    </ClCompile>
+    <ClCompile Include="Asio\Session\SessionState\LoginState.cpp">
+      <Filter>Asio\Session\SessionState</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -118,34 +151,25 @@
       <Filter>Asio\Session\SessionState</Filter>
     </ClInclude>
     <ClInclude Include="Cipher\CipherManager.h">
-      <Filter>Cipher</Filter>
+      <Filter>ManagementClass\CipherManager</Filter>
     </ClInclude>
     <ClInclude Include="Component\Component.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="WorkerGruop\WorkerGruop.h">
-      <Filter>WorkerGruop</Filter>
-    </ClInclude>
     <ClInclude Include="Mysql\MysqlPool.h">
-      <Filter>DB\Mysql</Filter>
+      <Filter>ManagementClass\DB\Mysql</Filter>
     </ClInclude>
     <ClInclude Include="EventManager\EventManager.h">
-      <Filter>EventManager</Filter>
+      <Filter>ManagementClass\EventManager</Filter>
     </ClInclude>
     <ClInclude Include="EventManager\React.h">
-      <Filter>EventManager</Filter>
+      <Filter>ManagementClass\EventManager</Filter>
     </ClInclude>
     <ClInclude Include="EventManager\TimeManager.h">
-      <Filter>EventManager</Filter>
-    </ClInclude>
-    <ClInclude Include="FlatBuffer\FBChat_generated.h">
-      <Filter>FlatBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="FlatBuffer\FBPlayer_generated.h">
-      <Filter>FlatBuffer</Filter>
+      <Filter>ManagementClass\EventManager</Filter>
     </ClInclude>
     <ClInclude Include="Log\LogManager.h">
-      <Filter>Log</Filter>
+      <Filter>ManagementClass\LogManager</Filter>
     </ClInclude>
     <ClInclude Include="User\User.h">
       <Filter>User</Filter>
@@ -157,17 +181,53 @@
     <ClInclude Include="Global.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="MongoDB\MongoDB.h">
-      <Filter>DB\MongoDB</Filter>
+      <Filter>ManagementClass\DB\MongoDB</Filter>
     </ClInclude>
     <ClInclude Include="Packet.h" />
-    <ClInclude Include="Map\MapManager.h">
-      <Filter>Map</Filter>
-    </ClInclude>
     <ClInclude Include="Map\MapInfo.h">
-      <Filter>Map</Filter>
+      <Filter>Component\Map</Filter>
     </ClInclude>
     <ClInclude Include="Mysql\MysqlManager.h">
-      <Filter>DB\Mysql</Filter>
+      <Filter>ManagementClass\DB\Mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="WorkerGroup\WorkerGroup.h">
+      <Filter>WorkerGroup</Filter>
+    </ClInclude>
+    <ClInclude Include="System\Time.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager\GameManager.h">
+      <Filter>Component\GameManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Character\Character.h">
+      <Filter>Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Character\CharacterManager.h">
+      <Filter>Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\MapManager.h">
+      <Filter>Component\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Channel\Channel.h">
+      <Filter>Component\Channel</Filter>
+    </ClInclude>
+    <ClInclude Include="Asio\Session\SessionState\LoginState.h">
+      <Filter>Asio\Session\SessionState</Filter>
+    </ClInclude>
+    <ClInclude Include="FlatBuffer\FB_chat_generated.h">
+      <Filter>ManagementClass\FlatBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="FlatBuffer\FB_generated.h">
+      <Filter>ManagementClass\FlatBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="FlatBuffer\FB_Character_generated.h">
+      <Filter>ManagementClass\FlatBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="FlatBuffer\FB_User_generated.h">
+      <Filter>ManagementClass\FlatBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="FlatBuffer\FB_Map_generated.h">
+      <Filter>ManagementClass\FlatBuffer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

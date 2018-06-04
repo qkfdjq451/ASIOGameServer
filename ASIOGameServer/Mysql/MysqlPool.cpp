@@ -29,9 +29,9 @@ void MysqlPool::setParameter(
 }
 
 MYSQL* MysqlPool::createOneConnect() {
-	MYSQL* conn = NULL;
+	MYSQL* conn = nullptr;
 	conn = mysql_init(conn);
-	if (conn != NULL) {
+	if (conn != nullptr) {
 		if (mysql_real_connect(
 			conn,
 			_mysqlhost,
@@ -50,12 +50,12 @@ MYSQL* MysqlPool::createOneConnect() {
 		}
 		else {
 			std::cout << mysql_error(conn) << std::endl;
-			return NULL;
+			return nullptr;
 		}
 	}
 	else {
 		std::cerr << "init failed" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -78,7 +78,7 @@ void MysqlPool::poolPop() {
 MYSQL* MysqlPool::getOneConnect() 
 {
 	poollock.lock();
-	MYSQL *conn = NULL;
+	MYSQL *conn = nullptr;
 	if (!isEmpty()) 
 	{
 		while (!isEmpty() && mysql_ping(poolFront())) 
@@ -114,7 +114,7 @@ MYSQL* MysqlPool::getOneConnect()
 
 void MysqlPool::close(MYSQL* conn) 
 {
-	if (conn != NULL) 
+	if (conn != nullptr)
 	{
 		poollock.lock();
 		mysqlpool.push(conn);
@@ -122,17 +122,17 @@ void MysqlPool::close(MYSQL* conn)
 	}
 }
 
-std::map<const std::string, std::vector<const char*> >  MysqlPool::executeSql_Map(const char* sql)
+QMap MysqlPool::executeSql_Map(const char* sql)
 {
 	MYSQL* conn = getOneConnect();
-	std::map<const std::string, std::vector<const char*> > results;
+	QMap results;
 	if (conn) 
 	{
 		if (mysql_query(conn, sql) == 0) 
 		{
 			MYSQL_RES *res = mysql_store_result(conn);
 			if (res) 
-			{
+			{				
 				MYSQL_FIELD *field;
 				while ((field = mysql_fetch_field(res))) 
 				{
@@ -168,10 +168,10 @@ std::map<const std::string, std::vector<const char*> >  MysqlPool::executeSql_Ma
 	return results;
 }
 
-std::vector<std::vector<std::string>> MysqlPool::executeSql_Vector(const char * sql)
+QVector MysqlPool::executeSql_Vector(const char * sql)
 {
 	MYSQL* conn = getOneConnect();
-	std::vector<std::vector<std::string>> result;
+	QVector result;
 	if (conn)
 	{
 		if (mysql_query(conn, sql) == 0)
@@ -179,16 +179,23 @@ std::vector<std::vector<std::string>> MysqlPool::executeSql_Vector(const char * 
 			MYSQL_RES *res = mysql_store_result(conn);
 			if (res)
 			{
+				MYSQL_FIELD *field;
+				std::vector<std::pair<std::string, std::string>> base;
+				while ((field = mysql_fetch_field(res)))
+				{
+					base.push_back(std::make_pair(std::string(field->name), std::string("df")));
+				}
+
 				MYSQL_ROW row;
 				int fieldCount = mysql_num_fields(res);
 				while ((row = mysql_fetch_row(res)))
 				{
-					std::vector<std::string> vec;
+					std::vector<std::pair<std::string, std::string>> clone(base);
 					for (int i = 0; i < fieldCount; i++)
 					{
-						vec.push_back(row[i]);
+						clone[i].second = row[i];
 					}
-					result.push_back(move(vec));
+					result.push_back(move(clone));
 				}
 			}
 			else
@@ -198,7 +205,55 @@ std::vector<std::vector<std::string>> MysqlPool::executeSql_Vector(const char * 
 		}
 		close(conn);
 	}
-	return move(result);
+	return result;
+}
+
+bool MysqlPool::executeSql_Vector(const char * sql, QVector& result)
+{
+	MYSQL* conn = getOneConnect();
+	if (conn)
+	{
+		if (mysql_query(conn, sql) == 0)
+		{
+
+			MYSQL_RES *res = mysql_store_result(conn);
+
+			MYSQL_FIELD *field;
+			std::vector<std::pair<std::string, std::string>> base;
+			while ((field = mysql_fetch_field(res)))
+			{
+				base.push_back(std::make_pair(std::string(field->name),std::string("df")));
+			}
+
+			if (res)
+			{
+				MYSQL_ROW row;
+				int fieldCount = mysql_num_fields(res);
+				while ((row = mysql_fetch_row(res)))
+				{
+					std::vector<std::pair<std::string, std::string>> clone(base);					
+					for (int i = 0; i < fieldCount; i++)
+					{
+						clone[i].second = row[i];
+					}
+					result.push_back(move(clone));
+				}
+			}			
+		}
+		else
+		{
+			//쿼리 실패 로그 남기기
+			std::cerr << mysql_error(conn) << std::endl;
+			return false;
+		}
+	}
+	else
+	{
+		//connect 가져오기 실패 로그 남기기
+		std::cerr << mysql_error(conn) << std::endl;
+		return false;
+	}
+	return true;
 }
 
 void MysqlPool::executeSql(const char * sql)
@@ -206,7 +261,7 @@ void MysqlPool::executeSql(const char * sql)
 	MYSQL* conn = getOneConnect();
 	if (conn)
 	{
-
+		executeSql_Vector(sql);
 	}
 	else
 	{

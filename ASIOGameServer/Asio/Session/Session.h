@@ -29,7 +29,7 @@ private:
 
 	//Recv결과 처리 및 buffer컨트롤 하는 함수
 	EResult RecvResult(std::size_t length);
-	EResult SendResult(SendBuffer& send_buffer, std::size_t length);
+	EResult SendResult(std::shared_ptr<struct SendBuffer> sb, std::size_t length);
 
 	tcp::socket socket_;					//자신의 소켓
 	asio::steady_timer timer_;				//타이머.
@@ -44,9 +44,15 @@ private:
 	std::shared_ptr<SendBuffer> current_send_buffer;
 
 	unsigned short com_sendSize;
+
+	//상태
+public:
+	void SetState(ESessionState _state);
+
 private:
 	//State
 	class SessionState* currentState;
 	class InGameState* ingameState;
+	class LoginState* loginState;
 
 };

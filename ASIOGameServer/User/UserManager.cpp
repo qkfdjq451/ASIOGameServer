@@ -1,7 +1,7 @@
 #include "UserManager.h"
 #include "User.h"
 #include "../Asio/Session/Session.h"
-#include "../Map/MapManager.h"
+
 #include "../Map/MapInfo.h"
 
 std::shared_ptr<class User> UserManager::CreateUser(int key)
@@ -11,38 +11,18 @@ std::shared_ptr<class User> UserManager::CreateUser(int key)
 	if (result == users.end())
 	{
 		auto user = std::make_shared<User>();
-		user->Init();
+		
 		//TODO : 나중에 DB에서 값을 가져와서 받게함
-
 		user->key = key;
 		user->id = std::to_string(key);
-		user->nickname = std::to_string(key);		
-		user->currentMapKey.Set(0);
-
 		users.insert(std::make_pair(key, user));
-/*
-		auto  MapUserFunc = std::make_shared<Function<int>>([user](int key)
-		{
-			auto mm = WorkerGruop::Get_InGameGroup()->GetRoot()->GetComponent<MapManager>();
-			auto mapinfo = mm->Get_MapInfo(user->currentMapKey);
-			auto um = mapinfo->GetComponent<UserManager>();
-			um->InsertUser(user);
-		}, key);
-		WorkerGruop::Get_InGameGroup()->PostFuction(move(MapUserFunc));
-*/
+
+		//TODO : Character 생성후 CharacterManager에 넣게 하기
+
+
 		return user;
 	}
 	return nullptr;
-}
-
-bool UserManager::InsertUser(std::shared_ptr<class User> user)
-{
-	auto result = users.find(user->key);
-	if (result == users.end()) 
-	{
-		users.insert(std::make_pair(user->key, user));
-	}
-	return false;
 }
 
 void UserManager::SendAllUsers(const PS & symbol, std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb)
@@ -59,31 +39,30 @@ void UserManager::SendAllUsers(const PS & symbol, std::shared_ptr<flatbuffers::F
 }
 
 bool UserManager::RemoveUser(int key)
-{
+{	
 	auto result = users.find(key);
 	if (result != users.end())
 	{
 		auto user = result->second;
 		auto  MainUserFunc=std::make_shared<Function<int>>([](int key)
 		{
-			auto um = WorkerGruop::Get_IOGroup()->GetRoot()->GetComponent<UserManager>();
+			auto um = WorkerGroup::Get_IOGroup()->GetComponent<UserManager>();
 			um->users.erase(key);
 		},key);
-
-		auto  MapUserFunc = std::make_shared<Function<int>>([user](int key)
-		{
-			auto mm = WorkerGruop::Get_InGameGroup()->GetRoot()->GetComponent<MapManager>();
-			auto mapinfo = mm->Get_MapInfo(key);
-			auto um = mapinfo->GetComponent<UserManager>();
-			um->users.erase(key);
-		},key);
-		WorkerGruop::Get_IOGroup()->PostFuction(move(MainUserFunc));
-		WorkerGruop::Get_InGameGroup()->PostFuction(move(MapUserFunc));
+		WorkerGroup::Get_IOGroup()->PostFuction(move(MainUserFunc));
 
 		return true;
 	}
 
 	return false;
+}
+
+void UserManager::LoopFunction(std::function<void(std::shared_ptr<class User>)> func)
+{
+	for (auto user : users)
+	{
+		func(user.second);
+	}
 }
 
 UserManager::UserManager()

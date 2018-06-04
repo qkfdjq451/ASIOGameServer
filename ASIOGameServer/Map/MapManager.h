@@ -1,20 +1,17 @@
 #pragma once
-#include "../Component/Component.h"
 
-class MapManager :public Component, public std::enable_shared_from_this<MapManager>
+class MapManager : public Component
 {
+	void BeginPlay() override;
+	void Tick() override;
+	void EndPlay() override;
+
 public:
-	static std::map<std::string, MapType> MapTypes;
-	MapType StringToMapType(std::string str);
-	std::shared_ptr<class MapInfo> Get_MapInfo(int key);
-
-
-
+	std::shared_ptr<class MapInfo> GetMapInfo(int code);
 private:
-	std::map<int, std::shared_ptr<class MapInfo>> mapinfos;
+	std::map<int, std::weak_ptr<MapInfo>> maps;
 
+	static std::map<std::string, MapType> MapTypes;
 public:
-	MapManager();
-	~MapManager();
-
+	static MapType StringToMapType(std::string str);
 };
