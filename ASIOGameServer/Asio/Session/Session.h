@@ -16,6 +16,7 @@ public:
 
 	//POST
 	void PushSend(std::shared_ptr<struct SendBuffer> sb);
+	void PushSend(const PS& symbol);
 	void PushSend(const PS& symbol, void* buffer_pointer, short buffersize);
 	void PushSend(const PS & symbol, std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb);
 	std::weak_ptr<class User> GetUser() { return user; }

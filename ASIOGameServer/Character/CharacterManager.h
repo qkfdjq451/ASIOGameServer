@@ -11,7 +11,7 @@ public:
 	void Async_InsertCharacter(std::shared_ptr<class Character> character);
 	void Async_EraseCharacter(int key);
 	void Async_SendAllCharacter(const PS & symbol, std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb);
-
+	void Async_Function(std::shared_ptr<Func> func);
 
 	int GetCharacterCount();	
 private:
@@ -37,8 +37,11 @@ private:
 	std::vector<std::shared_ptr<class Character>> req_Insert_list;
 	std::vector<int> req_erase_list;
 	std::vector<pair<PS, std::shared_ptr<flatbuffers::FlatBufferBuilder>>> req_send_all;
+	std::vector<std::shared_ptr<Func>> req_func_list;
+
 
 	bool bMovable;
+	float saveTime; 
 
 	//»ý¼ºÀÚ
 public:

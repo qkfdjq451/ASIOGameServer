@@ -229,5 +229,6 @@
     <ClInclude Include="FlatBuffer\FB_Map_generated.h">
       <Filter>ManagementClass\FlatBuffer</Filter>
     </ClInclude>
+    <ClInclude Include="Math.h" />
   </ItemGroup>
 </Project>

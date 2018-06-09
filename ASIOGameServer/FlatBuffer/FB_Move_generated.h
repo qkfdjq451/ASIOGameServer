@@ -15,12 +15,16 @@ struct Move;
 struct Move FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_CODE = 4,
-    VT_POSITION = 6,
-    VT_FOWARD = 8,
-    VT_SPEED = 10
+    VT_STATE = 6,
+    VT_POSITION = 8,
+    VT_FOWARD = 10,
+    VT_SPEED = 12
   };
   int32_t code() const {
     return GetField<int32_t>(VT_CODE, 0);
+  }
+  MoveState state() const {
+    return static_cast<MoveState>(GetField<int8_t>(VT_STATE, 0));
   }
   const Vec3 *position() const {
     return GetStruct<const Vec3 *>(VT_POSITION);
@@ -34,6 +38,7 @@ struct Move FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_CODE) &&
+           VerifyField<int8_t>(verifier, VT_STATE) &&
            VerifyField<Vec3>(verifier, VT_POSITION) &&
            VerifyField<Vec3>(verifier, VT_FOWARD) &&
            VerifyField<float>(verifier, VT_SPEED) &&
@@ -46,6 +51,9 @@ struct MoveBuilder {
   flatbuffers::uoffset_t start_;
   void add_code(int32_t code) {
     fbb_.AddElement<int32_t>(Move::VT_CODE, code, 0);
+  }
+  void add_state(MoveState state) {
+    fbb_.AddElement<int8_t>(Move::VT_STATE, static_cast<int8_t>(state), 0);
   }
   void add_position(const Vec3 *position) {
     fbb_.AddStruct(Move::VT_POSITION, position);
@@ -71,6 +79,7 @@ struct MoveBuilder {
 inline flatbuffers::Offset<Move> CreateMove(
     flatbuffers::FlatBufferBuilder &_fbb,
     int32_t code = 0,
+    MoveState state = MoveState_MOVING,
     const Vec3 *position = 0,
     const Vec3 *foward = 0,
     float speed = 0.0f) {
@@ -79,6 +88,7 @@ inline flatbuffers::Offset<Move> CreateMove(
   builder_.add_foward(foward);
   builder_.add_position(position);
   builder_.add_code(code);
+  builder_.add_state(state);
   return builder_.Finish();
 }
 

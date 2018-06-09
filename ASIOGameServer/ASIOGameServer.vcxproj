@@ -81,6 +81,7 @@
     <ClInclude Include="Log\LogManager.h" />
     <ClInclude Include="Map\MapInfo.h" />
     <ClInclude Include="Map\MapManager.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="MongoDB\MongoDB.h" />
     <ClInclude Include="Mysql\MysqlManager.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

@@ -4,7 +4,7 @@ class Channel : public Component
 {
 
 public:
-	Channel();
+	Channel(int mapcode, int channelNumber);
 	//비동기 함수 (외부 쓰레드에서 호출시 반드시 위에 함수로 호출)
 	void Async_InsertCharacter(std::shared_ptr<class Character> character);
 	void Async_EraseCharacter(int key);
@@ -13,11 +13,7 @@ public:
 	enum { Max_Character_Count = 50 };
 
 	int GetNumber() { return number; }
-	void SetNumber(int _number) { number = _number; }
-
-
 	int GetMapCode() { return mapCode; }
-	void SetMapCode(int _mapCode) { mapCode = _mapCode; }
 
 	void BeginPlay() override;
 	void PrevTick();

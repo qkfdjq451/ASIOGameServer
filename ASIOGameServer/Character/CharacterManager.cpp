@@ -37,6 +37,15 @@ void CharacterManager::Async_SendAllCharacter(const PS & symbol, std::shared_ptr
 	});
 }
 
+void CharacterManager::Async_Function(std::shared_ptr<Func> func)
+{
+	async(std::launch::async, [this, func]
+	{
+		std::lock_guard<std::mutex> lock(mt);
+		req_func_list.push_back(func);
+	});
+}
+
 int CharacterManager::GetCharacterCount()
 {
 	return characters.size();
@@ -95,6 +104,7 @@ std::shared_ptr<flatbuffers::FlatBufferBuilder> CharacterManager::Make_FBB_All_C
 			charB.add_nick(nick);
 			charB.add_power(ch->GetPower());
 			charB.add_speed(ch->GetSpeed());
+			charB.add_position(&ch->GetPosition().ToFBVector3());
 			vec.push_back(charB.Finish());
 		}
 	}
@@ -136,14 +146,17 @@ void CharacterManager::PrevTick()
 	std::vector<int> copy_erase_list;
 	std::vector<std::shared_ptr<class Character>> copy_Insert_list;
 	std::vector<pair<PS, std::shared_ptr<flatbuffers::FlatBufferBuilder>>>  copy_send_all;
+	std::vector<std::shared_ptr<Func>>  copy_func_list;
 	{
 		std::lock_guard<std::mutex> lock(mt);
 		copy_erase_list.assign(req_erase_list.begin(), req_erase_list.end());
 		copy_Insert_list.assign(req_Insert_list.begin(), req_Insert_list.end());
 		copy_send_all.assign(req_send_all.begin(), req_send_all.end());
+		copy_func_list.assign(req_func_list.begin(), req_func_list.end());
 		req_erase_list.clear();
 		req_Insert_list.clear();
 		req_send_all.clear();
+		req_func_list.clear();
 	}
 
 	for (auto erase : copy_erase_list)
@@ -163,17 +176,46 @@ void CharacterManager::PrevTick()
 		SendAllCharacter(packet.first, packet.second);
 	}
 	copy_send_all.clear();
+
+	for (auto func : copy_func_list)
+	{
+		func->func();
+	}
+	copy_func_list.clear();
+
 }
 
 void CharacterManager::Tick()
+
 {
 	PrevTick();
 	if (bMovable)
 	{
+		saveTime += Time::Delta();
 		for (auto character : characters)
 		{
 			auto ch = character.second.lock();
-			Moving(ch);
+			ch->Moving(Time::Delta());
+		}
+
+		if (saveTime > 0.4)
+		{
+			saveTime = 0;
+			auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+			vector<flatbuffers::Offset<FB::Move>> moveVec;
+			for (auto character : characters)
+			{
+				auto ch = character.second.lock();
+				ch->GetMoveInfo(fbb, moveVec);
+			}
+
+			if (moveVec.size() > 0)
+			{
+				auto vec = fbb->CreateVector(moveVec);
+				auto movebb = FB::CreateMoveVec(*fbb, vec);
+				fbb->Finish(movebb);
+				SendAllCharacter(PS::MOVING_VECTOR, fbb);
+			}			
 		}
 	}	
 }
@@ -189,6 +231,7 @@ void CharacterManager::EndPlay()
 CharacterManager::CharacterManager()
 {
 	bMovable = false;
+	saveTime = 0;
 }
 
 CharacterManager::~CharacterManager()

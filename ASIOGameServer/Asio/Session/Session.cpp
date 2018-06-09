@@ -98,6 +98,8 @@ void Session::do_write()
 
 	strand_.post([this, self]()
 	{	
+		std::shared_ptr<SendBuffer> temp;
+
 		if (current_send_buffer == nullptr)
 		{
 			if (send_buffers.empty() == true)
@@ -106,17 +108,26 @@ void Session::do_write()
 			}
 			else
 			{
-				current_send_buffer = send_buffers.front();
+				current_send_buffer = send_buffers.front();	
+				temp = current_send_buffer;
 			}
 		}
-
+		
 		socket_.async_write_some(asio::buffer(
 			&current_send_buffer->buffer.start_pointer + com_sendSize,
 			current_send_buffer->buffer.packet.size - com_sendSize)
-		,[this, self](std::error_code ec, std::size_t length)
+		,[this, self, temp](std::error_code ec, std::size_t length)
 		{
-			
-			auto retval = SendResult(current_send_buffer, length);
+			EResult retval;
+			if (current_send_buffer)
+			{
+				retval = SendResult(current_send_buffer, length);
+			}
+			else
+			{
+				retval = EResult::None;
+			}
+
 			printf(" send Å©±â : %zd\n", length);
 			
 			if (length == 0)
@@ -132,10 +143,19 @@ void Session::do_write()
 			case EResult::COMPLETE:				
 				com_sendSize = 0;				
 				current_send_buffer = nullptr;
+
 				send_buffers.pop();
 				do_write();
 				break;
+
+			case EResult::None:
+			{
+				com_sendSize = 0;
+				cout << "current_send_buffer Áö¿öÁü " << endl;
 			}
+			break;
+			}
+			
 		});
 	});
 }
@@ -193,8 +213,6 @@ void Session::SetState(ESessionState _state)
 void Session::PushSend(std::shared_ptr<struct SendBuffer> sb)
 {
 	auto self(shared_from_this());
-
-
 	strand_.post([this, self, sb]
 	{
 		if (sb == nullptr)
@@ -204,6 +222,17 @@ void Session::PushSend(std::shared_ptr<struct SendBuffer> sb)
 		}			
 		std::cout << "³Î¾Æ´Ô!!" << std::endl;
 		send_buffers.push(sb);
+		do_write();
+	});
+}
+
+void Session::PushSend(const PS & symbol)
+{
+	auto self(shared_from_this());
+
+	strand_.post([this, self,  symbol]
+	{
+		send_buffers.push(std::make_shared<SendBuffer>(symbol));
 		do_write();
 	});
 }

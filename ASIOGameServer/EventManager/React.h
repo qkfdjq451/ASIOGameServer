@@ -52,6 +52,13 @@ public:
 		return false;
 	}
 
+	void ClearEvent()
+	{
+		prevEvents.clear();
+		postEvents.clear();
+	}
+
+
 	React() :  eventPrevCount(0) , eventPostCount(0)
 	{}
 private:

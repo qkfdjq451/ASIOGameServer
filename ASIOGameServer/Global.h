@@ -3,7 +3,7 @@
 
 #pragma warning( disable : 4267 )		//  size_t <-> other type 변환 경고
 
-#define BUFSIZE	1024
+#define BUFSIZE	2048
 #define _WIN32_WINNT  0x0603
 
 
@@ -31,8 +31,9 @@ typedef unsigned char uint8;
 
 typedef std::map<const std::string, std::vector<const char*>> QMap;
 typedef std::vector<std::vector<std::pair<std::string,std::string>>> QVector;
+typedef std::vector<std::shared_ptr<class Component>> ComVector;
 
-
+#include "Math.h"
 #include "./Packet.h"
 
 #include "Flag.h"

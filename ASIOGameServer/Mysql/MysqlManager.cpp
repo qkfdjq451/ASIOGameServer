@@ -15,9 +15,9 @@ MySQLManager::~MySQLManager()
 
 }
 
-const char * MySQLManager::Select_UserCharacter(int char_code)
+string MySQLManager::Select_UserCharacter(int char_code)
 {
-	char sql[256];
+	char sql[512];
 	sprintf_s(sql,"select * from UserCharacter natural join CharacterPosion where UserCharacter.CharacterCode = %d;", char_code);
 	return sql;
 }

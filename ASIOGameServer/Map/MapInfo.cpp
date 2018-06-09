@@ -14,8 +14,7 @@ void MapInfo::BeginPlay()
 {
 	for (int i = 1; i <= 3; i++)
 	{
-		auto channel = Component::CreateComponent<Channel>();
-		channel->SetNumber(i);
+		auto channel = Component::CreateComponent<Channel>(mapCode,i);		
 		Attach(channel);
 		channels.push_back(channel);
 	}

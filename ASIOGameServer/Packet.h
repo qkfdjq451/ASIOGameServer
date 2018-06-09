@@ -11,6 +11,7 @@
 #include "./FlatBuffer/FB_Map_generated.h"
 #include "./FlatBuffer/FB_Move_generated.h"
 #include "./FlatBuffer/FB_Move_Vec_generated.h"
+#include "./FlatBuffer/FB_Attack_generated.h"
 
 
 enum class Packet_Symbal : unsigned short
@@ -36,9 +37,13 @@ enum class Packet_Symbal : unsigned short
 
 	REQ_ENTER_CHANNEL,
 	CON_ENTER_CHANNEL,
+	
+	//이동관련
+	MOVING,
+	MOVING_VECTOR,
 
-
-
+	//공격관련
+	Attack,
 
 	TEST
 };

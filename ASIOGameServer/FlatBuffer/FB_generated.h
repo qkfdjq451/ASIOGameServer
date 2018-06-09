@@ -71,6 +71,76 @@ inline const char *EnumNameCharacterType(CharacterType e) {
   return EnumNamesCharacterType()[index];
 }
 
+enum MoveState {
+  MoveState_MOVING = 0,
+  MoveState_STOP = 1,
+  MoveState_MIN = MoveState_MOVING,
+  MoveState_MAX = MoveState_STOP
+};
+
+inline const MoveState (&EnumValuesMoveState())[2] {
+  static const MoveState values[] = {
+    MoveState_MOVING,
+    MoveState_STOP
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesMoveState() {
+  static const char * const names[] = {
+    "MOVING",
+    "STOP",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameMoveState(MoveState e) {
+  const size_t index = static_cast<int>(e);
+  return EnumNamesMoveState()[index];
+}
+
+enum AttackState {
+  AttackState_Combo1 = 0,
+  AttackState_Combo2 = 1,
+  AttackState_Combo3 = 2,
+  AttackState_Skill1 = 3,
+  AttackState_Skill2 = 4,
+  AttackState_Skill3 = 5,
+  AttackState_MIN = AttackState_Combo1,
+  AttackState_MAX = AttackState_Skill3
+};
+
+inline const AttackState (&EnumValuesAttackState())[6] {
+  static const AttackState values[] = {
+    AttackState_Combo1,
+    AttackState_Combo2,
+    AttackState_Combo3,
+    AttackState_Skill1,
+    AttackState_Skill2,
+    AttackState_Skill3
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesAttackState() {
+  static const char * const names[] = {
+    "Combo1",
+    "Combo2",
+    "Combo3",
+    "Skill1",
+    "Skill2",
+    "Skill3",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameAttackState(AttackState e) {
+  const size_t index = static_cast<int>(e);
+  return EnumNamesAttackState()[index];
+}
+
 MANUALLY_ALIGNED_STRUCT(4) Vec3 FLATBUFFERS_FINAL_CLASS {
  private:
   float x_;

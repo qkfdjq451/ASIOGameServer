@@ -1,9 +1,10 @@
 #pragma once
 
+
 class MySQLManager
 {
 public:
-	static const char * Select_UserCharacter(int char_code);
+	static string Select_UserCharacter(int char_code);
 	//NonBlocking
 	// Async_Query 설명
 	// 비동기로 호출 후 결과물이 있을 시 결과를 비동기로 호출한다

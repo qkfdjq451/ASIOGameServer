@@ -5,8 +5,9 @@
 #include "../User/User.h"
 #include "../Asio/Session/Session.h"
 
-Channel::Channel()
-	:number(0)
+
+Channel::Channel(int mapcode, int channelNumber)
+	:mapCode(mapcode),number(channelNumber)
 {
 
 }
@@ -26,6 +27,7 @@ void Channel::Async_EraseCharacter(int key)
 	{
 		std::lock_guard<std::mutex> lock(mt);
 		req_erase_list.push_back(key);
+		
 	});
 }
 
@@ -54,19 +56,19 @@ void Channel::PrevTick()
 	{
 		EraseCharacter(erase);
 	}
-	copy_erase_list.clear();
 
 	for (auto insert : copy_Insert_list)
 	{
 		InsertCharacter(insert);
+
 	}
-	copy_Insert_list.clear();
+
 }
 
 void Channel::Tick()
 {
 	PrevTick();
-
+	
 }
 
 void Channel::EndPlay()
@@ -83,7 +85,9 @@ bool Channel::InsertCharacter(std::shared_ptr<class Character> character)
 		auto fbb2 = cm->Make_FBB_All_CharacterInfo();
 		auto user = character->GetUserPointer().lock();
 		auto session = user->GetSesstion().lock();
-		session->PushSend(PS::ENTER_NEW_CHARACTER_VECTOR, fbb2);
+		session->PushSend(PS::ENTER_NEW_CHARACTER_VECTOR, move(fbb2));
+		cout << "모든 케릭터 정보 알려주기" << endl;
+
 
 		auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
 		auto nick = fbb->CreateString(character->GetName());
@@ -94,12 +98,15 @@ bool Channel::InsertCharacter(std::shared_ptr<class Character> character)
 		charB.add_nick(nick);
 		charB.add_power(character->GetPower());
 		charB.add_speed(character->GetSpeed());		
+		charB.add_position(&character->GetPosition().ToFBVector3());
 		auto charoffset=charB.Finish();
 		fbb->Finish(charoffset);
 		cm->SendAllCharacter(PS::ENTER_NEW_CHARACTER, move(fbb));
+		cout << "새로운 케릭터가 들어 왔다는 것을 알려주기" << endl;
 
 		return true;
 	}
+
 	return false;
 }
 

@@ -12,7 +12,8 @@ enum class EResult : char
 {
 	LOW = -1,
 	COMPLETE = 0,
-	OVER = 1
+	OVER = 1,
+	None = 2
 };
 
 enum class MapType : char

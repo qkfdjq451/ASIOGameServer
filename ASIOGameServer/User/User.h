@@ -6,7 +6,7 @@ class User :public std::enable_shared_from_this<User>
 public:
 	friend class UserManager;
 	User();
-	
+	~User();
 public:	
 	
 	std::weak_ptr<class Session> GetSesstion() { return session; }

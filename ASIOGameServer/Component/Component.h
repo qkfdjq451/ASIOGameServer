@@ -138,3 +138,4 @@ inline std::shared_ptr<T> Component::CreateComponent(_Types&&... _Args)
 	}
 	return make;
 }
+

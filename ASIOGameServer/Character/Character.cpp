@@ -4,21 +4,24 @@
 #include "../Map/MapInfo.h"
 #include "../Map/MapManager.h"
 #include "../Channel/Channel.h"
+#include "../User/User.h"
+#include "../Asio/Session/Session.h"
 
-Character::Character(std::shared_ptr<class User> user)
-	:user(user)
+Character::Character(std::shared_ptr<class User> user, int code)
+	:user(user), code(code) , forward(0,0,0), bMove(false), bChangePosition(false)
 {	
+	mapKey.Set(0);
+	channel.Set(0);
 }
 
 Character::~Character()
 {
-	mapKey.Set(0);
+	cout << "ÄÉ¸¯ÅÍ »ç¶óÁü" << endl;
 }
 
 void Character::Init()
 {
 	auto self = shared_from_this();
-	mapKey.Set(0);
 
 	mapKey.InsertPrevEvent([self,this](int mapKey)
 	{		
@@ -27,13 +30,26 @@ void Character::Init()
 
 	mapKey.InsertPostEvent([this,self](int mapKey)
 	{
-		vector<std::shared_ptr<Component>> vec;
-		Component::GetComponents_For_Tag("MapManager", vec);
-		auto mm = dynamic_pointer_cast<MapManager>(vec[0]);
-		if (mm)
+		cout << "¸ãÅ° : " << mapKey << endl;
+		if (mapKey != 0)
 		{
-			auto mapinfo = mm->GetMapInfo(mapKey);
-			mapinfo->InsertCharacter(self);
+			vector<std::shared_ptr<Component>> vec;
+			Component::GetComponents_For_Tag("MapManager", vec);
+			auto mm = dynamic_pointer_cast<MapManager>(vec[0]);
+			if (mm)
+			{
+				auto mapinfo = mm->GetMapInfo(mapKey);
+				auto shareduser = user.lock();
+				if (shareduser)
+				{
+					auto sesstion = shareduser->GetSesstion().lock();
+					if (sesstion)
+					{
+						sesstion->PushSend(PS::CON_ENTER_MAP);
+					}
+				}
+				mapinfo->InsertCharacter(self);
+			}
 		}
 
 	});
@@ -49,7 +65,7 @@ void Character::Init()
 			if (mm)
 			{
 				auto mapinfo = mm->GetMapInfo(mapKey.Get());
-				mapinfo->GetChannel(channel)->Async_EraseCharacter(code);
+				mapinfo->GetChannel(channel)->Async_EraseCharacter(code);				
 			}
 		}
 	});
@@ -66,9 +82,49 @@ void Character::Init()
 			{
 				auto mapinfo = mm->GetMapInfo(mapKey.Get());
 				mapinfo->GetChannel(key)->Async_InsertCharacter(self);
+
 			}
 		}
 
 	});
+}
+
+void Character::Clear()
+{
+	hp.ClearEvent();
+	power.ClearEvent();
+	mapKey.ClearEvent();
+	channel.ClearEvent();
+}
+
+void Character::SetForward(Vector3 _forward)
+{
+	_forward.Normalize();
+	forward = _forward;	
+}
+
+void Character::Moving(float delta)
+{
+	if (bMove)
+	{
+		bChangePosition = true;
+		position += forward * delta * speed;
+	}
+	
+}
+
+void Character::GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb, vector<flatbuffers::Offset<FB::Move>>& vec)
+{
+	if (bChangePosition)
+	{
+		auto moveb=FB::MoveBuilder(*fbb);
+		moveb.add_code(code);
+		bMove ? moveb.add_state(FB::MoveState::MoveState_MOVING): moveb.add_state(FB::MoveState::MoveState_STOP);
+		moveb.add_foward(&forward.ToFBVector3());
+		moveb.add_position(&position.ToFBVector3());
+		moveb.add_speed(speed);
+		vec.push_back(moveb.Finish());
+		bChangePosition = false;
+	}
 }
 
