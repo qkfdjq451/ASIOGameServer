@@ -20,7 +20,7 @@ enum class MapType : char
 {
 	None,
 	Town,
-	Dungeoun
+	Dungeon
 };
 
 enum class ESessionState :char

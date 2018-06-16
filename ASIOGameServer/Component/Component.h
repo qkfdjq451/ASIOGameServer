@@ -28,7 +28,10 @@ public:
 		class... _Types >
 	static std::shared_ptr<T> CreateComponent(_Types&&... _Args);
 
-
+	
+	std::shared_ptr<Component> GetParentComponent() { return parent; }
+	template<typename T>
+	std::shared_ptr<T> GetParentComponent();
 
 	class WorkerGroup*GetWorkerGroup() { return workerGroup; }
 	void SetWorkerGroup(class WorkerGroup* _workerGroup) { workerGroup = _workerGroup; }
@@ -139,3 +142,8 @@ inline std::shared_ptr<T> Component::CreateComponent(_Types&&... _Args)
 	return make;
 }
 
+template<typename T>
+inline std::shared_ptr<T> Component::GetParentComponent()
+{
+	return  std::dynamic_pointer_cast<T>(parent);	
+}

@@ -56,6 +56,11 @@ bool CharacterManager::InsertCharacter(std::shared_ptr<class Character> characte
 	auto result = characters.find(character->code);
 	if (result == characters.end())
 	{
+		auto nv = navi.lock();
+		if (nv)
+		{
+			character->navi = navi;
+		}
 		characters.insert(std::make_pair(character->code, character));
 		return true;
 	}
@@ -118,6 +123,11 @@ bool CharacterManager::EraseCharacter(int key)
 	auto result = characters.find(key);
 	if (result != characters.end())
 	{
+		auto character = result->second.lock();
+		if (character)
+		{
+			character->navi.reset();
+		}
 		characters.erase(key);
 		return true;
 	}

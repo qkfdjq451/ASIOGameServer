@@ -93,6 +93,30 @@ struct Vector3
 	{
 		x = V.x; y = V.y; z = V.z;
 	}
+
+	std::string ToString()
+	{
+		std::string str;
+		str = "X : " + std::to_string(x) + " Y : " + std::to_string(y) + " Z : " + std::to_string(z);
+		return str;
+	}
+
+	void ToUnrealLocation()
+	{
+		Vector3 temp = *this;
+		this->x = -temp.x;
+		this->y = -temp.z;
+		this->z = temp.y;
+	}
+
+	static float Distance(Vector3 first, Vector3 second)
+	{
+		Vector3 temp=first - second;
+		temp.x *= temp.x;
+		temp.y *= temp.y;
+		temp.z *= temp.z;
+		return std::sqrt(temp.x + temp.y + temp.z);
+	}
 };
 
 struct MoveData
@@ -193,4 +217,80 @@ private:
 	{
 		fun();
 	}
+};
+
+struct RespawnRange
+{
+	RespawnRange
+	(
+		float _minX=0,
+		float _maxX=0,
+		float _minY=0,
+		float _maxY=0
+	)
+	{
+		if (_minX > _maxX)
+		{
+			minX = _maxX;
+			maxX = _minX;
+		}
+		else
+		{
+			minX = _minX;
+			maxX = _maxX;
+		}
+
+		if (_minY > _maxY)
+		{
+			minY= _maxY;
+			maxY = _minY;
+		}
+		else
+		{
+			minY = _minY;
+			maxY = _maxY;
+		}
+	}
+	void SetRange
+	(
+		float _minX = 0,
+		float _maxX = 0,
+		float _minY = 0,
+		float _maxY = 0
+	)
+	{
+		if (_minX > _maxX)
+		{
+			minX = _maxX;
+			maxX = _minX;
+		}
+		else
+		{
+			minX = _minX;
+			maxX = _maxX;
+		}
+
+		if (_minY > _maxY)
+		{
+			minY = _maxY;
+			maxY = _minY;
+		}
+		else
+		{
+			minY = _minY;
+			maxY = _maxY;
+		}
+	}
+	void SetRange(const RespawnRange& _respawn)
+	{
+		minX = _respawn.minX;
+		maxX = _respawn.maxX;
+		minY = _respawn.minY;
+		maxY = _respawn.maxY;
+	}
+
+	float minX;
+	float maxX;
+	float minY;
+	float maxY;
 };

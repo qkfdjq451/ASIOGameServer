@@ -33,7 +33,9 @@ void LoginState::On_Read(const PS & symbol, void * recv_data, unsigned short siz
 							character->SetHP(atof(vec[0][4].second.c_str()));
 							character->SetPower(atof(vec[0][5].second.c_str()));
 							character->SetSpeed(atof(vec[0][6].second.c_str()));
-							character->SetMapKey(atoi(vec[0][7].second.c_str()));
+							//character->SetMapKey(atoi(vec[0][7].second.c_str()));
+							character->SetMapKey(3);
+
 							auto position = Vector3(vec[0][8].second, vec[0][9].second, vec[0][10].second);
 							position.y+= 100*character->GetCode();
 							printf("%f, %f, %f \n", position.x, position.y, position.z);

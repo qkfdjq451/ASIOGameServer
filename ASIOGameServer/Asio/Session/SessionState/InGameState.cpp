@@ -18,7 +18,6 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 		{
 			auto ss = session.lock();
 			auto user = ss->GetUser().lock();
-
 			if (ss != nullptr&&user != nullptr)
 			{
 
@@ -57,8 +56,9 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 		if (ss != nullptr&&user != nullptr)
 		{
 			auto moveInfo = FB::GetMove(recv_data);
-			auto forward = moveInfo->foward();
-			auto forwardVector = std::make_shared<Vector3>(forward);
+			auto speed = moveInfo->speed();
+			auto positionVector = std::make_shared<Vector3>(moveInfo->position());
+			auto forwardVector = std::make_shared<Vector3>(moveInfo->foward());
 			auto state = moveInfo->state();
 			ComVector vec;
 			Component::GetComponents_For_Tag("MapManager", vec);
@@ -69,11 +69,13 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 				auto mapinfo = mapmanager->GetMapInfo(user->GetCharacter()->GetMapKey());
 				auto channel = mapinfo->GetChannel(user->GetCharacter()->GetChannel());
 				auto cm = channel->GetComponent<CharacterManager>();
-				auto func = make_shared<Function<FB::MoveState>>([character, forwardVector](FB::MoveState state)
+				auto func = make_shared<Function<FB::MoveState>>([character, speed,forwardVector, positionVector](FB::MoveState state)
 				{
+					character->SetPositionZ(positionVector->z);
+					character->SetDestination(*positionVector);
 					character->SetForward(*forwardVector);
+					character->SetCurrentSpeed(speed);
 					state == FB::MoveState::MoveState_MOVING ? character->SetMove(true) : character->SetMove(false);
-					cout << "Moving ป๓ลย : " << character->bMove << endl;
 				}, state);
 				cm->Async_Function(func);
 			}

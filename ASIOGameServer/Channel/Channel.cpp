@@ -4,7 +4,9 @@
 #include "../Character/Character.h"
 #include "../User/User.h"
 #include "../Asio/Session/Session.h"
-
+#include "../Map/MapInfo.h"
+#include "../Map/MapManager.h"
+#include "../Monster/MonsterManager.h"
 
 Channel::Channel(int mapcode, int channelNumber)
 	:mapCode(mapcode),number(channelNumber)
@@ -35,8 +37,28 @@ void Channel::Async_EraseCharacter(int key)
 void Channel::BeginPlay()
 {	
 	auto cm=Component::CreateComponent<CharacterManager>();
-	cm->SetMovable(true);
-	Attach(cm);
+	if (cm)
+	{
+		cm->SetMovable(true);
+		Attach(cm);
+	}	
+	auto mapInfo = GetParentComponent<MapInfo>();	
+	if (mapInfo!=nullptr )
+	{
+		if (MapType::Dungeon == mapInfo->GetMapType())
+		{
+			auto monstermanager = Component::CreateComponent<MonsterManager>();
+			if (monstermanager)
+			{
+				auto descs = mapInfo->GetSpawnDesc();
+				for (auto desc : descs)
+				{
+					monstermanager->Add_Spawn_Monster(desc);
+				}
+				Attach(monstermanager);
+			}	
+		}
+	}
 }
 
 void Channel::PrevTick()
@@ -60,7 +82,6 @@ void Channel::PrevTick()
 	for (auto insert : copy_Insert_list)
 	{
 		InsertCharacter(insert);
-
 	}
 
 }
@@ -82,13 +103,28 @@ bool Channel::InsertCharacter(std::shared_ptr<class Character> character)
 	bool result = cm->InsertCharacter(character);
 	if(result)
 	{
-		auto fbb2 = cm->Make_FBB_All_CharacterInfo();
 		auto user = character->GetUserPointer().lock();
 		auto session = user->GetSesstion().lock();
+
+		auto mapInfo = GetParentComponent<MapInfo>();
+		if (mapInfo != nullptr)
+		{
+			if (MapType::Dungeon == mapInfo->GetMapType())
+			{
+				auto monsterMng = GetComponent<MonsterManager>();
+				if (monsterMng)
+				{
+					auto fbb3 = monsterMng->Make_FBB_All_Monster();
+					session->PushSend(PS::RESPAWN_MONSTER_VEC, move(fbb3));
+					printf("몬스터 정보 보내기!");
+				}
+			}
+		}
+
+		auto fbb2 = cm->Make_FBB_All_CharacterInfo();	
 		session->PushSend(PS::ENTER_NEW_CHARACTER_VECTOR, move(fbb2));
-		cout << "모든 케릭터 정보 알려주기" << endl;
 
-
+		
 		auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
 		auto nick = fbb->CreateString(character->GetName());
 		auto charB = FB::CharacterBuilder(*fbb);
@@ -102,7 +138,6 @@ bool Channel::InsertCharacter(std::shared_ptr<class Character> character)
 		auto charoffset=charB.Finish();
 		fbb->Finish(charoffset);
 		cm->SendAllCharacter(PS::ENTER_NEW_CHARACTER, move(fbb));
-		cout << "새로운 케릭터가 들어 왔다는 것을 알려주기" << endl;
 
 		return true;
 	}

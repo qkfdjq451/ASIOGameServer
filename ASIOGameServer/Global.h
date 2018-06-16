@@ -6,7 +6,8 @@
 #define BUFSIZE	2048
 #define _WIN32_WINNT  0x0603
 
-
+#define MIN_flt			(1.175494351e-38F)		
+#define MAX_flt			(3.402823466e+38F)
 
 #include <iostream>
 #include <unordered_map>
@@ -24,6 +25,11 @@
 #include <mutex>
 #include <future>
 #include <algorithm>
+#include <random>
+#include <fstream>
+//전역 파일 위치
+const std::string NaviDatas = "../NavigationData/";
+
 
 //Typedef
 typedef unsigned int	uint;

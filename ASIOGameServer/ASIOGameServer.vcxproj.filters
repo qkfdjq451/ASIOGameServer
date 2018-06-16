@@ -58,6 +58,12 @@
     <Filter Include="WorkerGroup">
       <UniqueIdentifier>{267295ad-c72f-4a71-baba-2fd34a3306ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Monster">
+      <UniqueIdentifier>{98d2c7ce-5216-48cd-8764-39f8ece750a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Navi">
+      <UniqueIdentifier>{b5225e85-0b03-4552-81d9-64755dd3a466}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Asio\Asio.cpp">
@@ -132,6 +138,18 @@
     </ClCompile>
     <ClCompile Include="Asio\Session\SessionState\LoginState.cpp">
       <Filter>Asio\Session\SessionState</Filter>
+    </ClCompile>
+    <ClCompile Include="Monster\Monster.cpp">
+      <Filter>Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="Monster\MonsterManager.cpp">
+      <Filter>Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="Monster\MonsterBuilder.cpp">
+      <Filter>Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="Navi\Navigation.cpp">
+      <Filter>Navi</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -230,5 +248,17 @@
       <Filter>ManagementClass\FlatBuffer</Filter>
     </ClInclude>
     <ClInclude Include="Math.h" />
+    <ClInclude Include="Monster\Monster.h">
+      <Filter>Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="Monster\MonsterManager.h">
+      <Filter>Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="Monster\MonsterBuilder.h">
+      <Filter>Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="Navi\Navigation.h">
+      <Filter>Navi</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

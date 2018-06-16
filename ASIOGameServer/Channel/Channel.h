@@ -26,7 +26,8 @@ private:
 private:
 	int number;
 	int mapCode;
-		
+	
+	
 	std::vector<std::shared_ptr<class Character>> req_Insert_list;
 	std::vector<int> req_erase_list;
 };

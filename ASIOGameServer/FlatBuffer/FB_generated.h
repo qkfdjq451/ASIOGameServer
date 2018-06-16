@@ -71,6 +71,38 @@ inline const char *EnumNameCharacterType(CharacterType e) {
   return EnumNamesCharacterType()[index];
 }
 
+enum PlayerType {
+  PlayerType_Player = 0,
+  PlayerType_Monster = 1,
+  PlayerType_NPC = 2,
+  PlayerType_MIN = PlayerType_Player,
+  PlayerType_MAX = PlayerType_NPC
+};
+
+inline const PlayerType (&EnumValuesPlayerType())[3] {
+  static const PlayerType values[] = {
+    PlayerType_Player,
+    PlayerType_Monster,
+    PlayerType_NPC
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesPlayerType() {
+  static const char * const names[] = {
+    "Player",
+    "Monster",
+    "NPC",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNamePlayerType(PlayerType e) {
+  const size_t index = static_cast<int>(e);
+  return EnumNamesPlayerType()[index];
+}
+
 enum MoveState {
   MoveState_MOVING = 0,
   MoveState_STOP = 1,

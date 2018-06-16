@@ -18,7 +18,8 @@ public:
 	std::string GetName() { return nickname; }
 	float GetHP() { return hp.Get(); }
 	float GetPower() { return power.Get(); }
-	float GetSpeed() { return speed; }
+	float GetCurrentSpeed() { return currentSpeed; }
+	float GetSpeed() { return maxSpeed; }
 	Vector3 GetPosition() { return position; }
 	int GetChannel() { return channel.Get(); }
 	int GetMapKey() { return mapKey.Get(); }
@@ -34,8 +35,10 @@ public:
 	void SetHP(float _hp) { hp.Set(_hp); }
 	void SetPower(float _power) { power.Set(_power); }
 
-	void SetSpeed(float _speed) { speed = _speed; }
+	void SetCurrentSpeed(float _speed) { currentSpeed = _speed; }
+	void SetSpeed(float _speed) { maxSpeed = _speed; }
 	void SetPosition(const Vector3& vec3) { position = vec3; }
+	void SetPositionZ(float z) { position.z = z; }
 	std::weak_ptr<class User> GetUserPointer() { return user; }
 
 	//이동 관련 변수와 함수
@@ -44,6 +47,7 @@ public:
 	Vector3 forward;
 	void SetMove(bool move) { bMove = move; }
 	void SetForward(Vector3 _forward);
+	void SetDestination(Vector3 _pos) { dest = _pos; }
 	void Moving(float delta);
 	void GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb, vector<flatbuffers::Offset<FB::Move>> &vec);
 
@@ -59,13 +63,16 @@ protected:
 	React<float> hp;
 	React<float> power;
 
-	float speed;
+	float maxSpeed;
+	float currentSpeed;
+
 
 	Vector3 position;
+	Vector3 dest;
 
 	React<int> mapKey;
 	React<int> channel;
 
 
-	
+	std::weak_ptr<class Navigation> navi;
 };

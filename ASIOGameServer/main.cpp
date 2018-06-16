@@ -6,14 +6,16 @@
 #include "./EventManager/TimeManager.h"
 #include "./EventManager/EventManager.h"
 #include"GameManager/GameManager.h"
-
-
+#include "./Monster/MonsterBuilder.h"
+#include "./Navi/Navigation.h"
 
 int main(int argc, char* argv[])
 {
 	MySQLManager::Create();
 	TimerManager::Create();
 	EventManager::Create();
+	MonsterBuilder::Init();
+	Navigation::Init();
 	auto gm = std::make_shared<GameManager>();
 	try 
 	{

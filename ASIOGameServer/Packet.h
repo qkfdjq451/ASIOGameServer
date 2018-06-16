@@ -12,7 +12,10 @@
 #include "./FlatBuffer/FB_Move_generated.h"
 #include "./FlatBuffer/FB_Move_Vec_generated.h"
 #include "./FlatBuffer/FB_Attack_generated.h"
+#include "./FlatBuffer/FB_Damage_generated.h"
 
+#include "./FlatBuffer/FB_Monster_generated.h"
+#include "./FlatBuffer/FB_Monster_Vec_generated.h"
 
 enum class Packet_Symbal : unsigned short
 {
@@ -20,12 +23,9 @@ enum class Packet_Symbal : unsigned short
 	CHATTING_ALL,
 	CHATTING_WHISPER,
 
-
-
 	ENTER_NEW_CHARACTER,
 	ENTER_NEW_CHARACTER_VECTOR,
-
-	
+		
 	LEAVE_CHARACTER,
 	LEAVE_CHARACTER_VECTOR,
 
@@ -41,6 +41,10 @@ enum class Packet_Symbal : unsigned short
 	//이동관련
 	MOVING,
 	MOVING_VECTOR,
+
+	//몬스터 관련
+	RESPAWN_MONSTER,
+	RESPAWN_MONSTER_VEC,
 
 	//공격관련
 	Attack,

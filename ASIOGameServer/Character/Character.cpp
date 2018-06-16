@@ -7,6 +7,8 @@
 #include "../User/User.h"
 #include "../Asio/Session/Session.h"
 
+#include "../Navi/Navigation.h"
+
 Character::Character(std::shared_ptr<class User> user, int code)
 	:user(user), code(code) , forward(0,0,0), bMove(false), bChangePosition(false)
 {	
@@ -107,8 +109,26 @@ void Character::Moving(float delta)
 {
 	if (bMove)
 	{
-		bChangePosition = true;
-		position += forward * delta * speed;
+		if (currentSpeed > maxSpeed)
+			currentSpeed = maxSpeed;
+	}
+	else
+	{
+		//if (currentSpeed < 0)
+		if (Vector3::Distance(dest, position)<10)
+		{
+			currentSpeed = maxSpeed;
+			SetForward(dest - position);
+		}
+		else
+		{
+			currentSpeed = 0;
+		}
+	}
+	if (currentSpeed != 0)
+	{
+		bChangePosition = true;		
+		position += forward * delta * currentSpeed;
 	}
 	
 }
@@ -122,7 +142,7 @@ void Character::GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb,
 		bMove ? moveb.add_state(FB::MoveState::MoveState_MOVING): moveb.add_state(FB::MoveState::MoveState_STOP);
 		moveb.add_foward(&forward.ToFBVector3());
 		moveb.add_position(&position.ToFBVector3());
-		moveb.add_speed(speed);
+		moveb.add_speed(currentSpeed);
 		vec.push_back(moveb.Finish());
 		bChangePosition = false;
 	}

@@ -51,7 +51,7 @@ std::shared_ptr<MapInfo> MapManager::GetMapInfo(int code)
 
 std::map<std::string, MapType> MapManager::MapTypes = { 
 	{ std::string("Town"), MapType::Town},
-{ std::string("Dungeoun"), MapType::Dungeoun }
+{ std::string("Dungeon"), MapType::Dungeon }
 };
 
 MapType MapManager::StringToMapType(std::string str)

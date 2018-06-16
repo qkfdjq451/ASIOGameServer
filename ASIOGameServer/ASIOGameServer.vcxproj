@@ -38,6 +38,9 @@
     <ClCompile Include="Map\MapInfo.cpp" />
     <ClCompile Include="Map\MapManager.cpp" />
     <ClCompile Include="MongoDB\MongoDB.cpp" />
+    <ClCompile Include="Monster\Monster.cpp" />
+    <ClCompile Include="Monster\MonsterBuilder.cpp" />
+    <ClCompile Include="Monster\MonsterManager.cpp" />
     <ClCompile Include="Mysql\MysqlManager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
@@ -50,6 +53,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Navi\Navigation.cpp" />
     <ClCompile Include="System\Time.cpp" />
     <ClCompile Include="User\User.cpp" />
     <ClCompile Include="User\UserManager.cpp" />
@@ -83,6 +87,9 @@
     <ClInclude Include="Map\MapManager.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="MongoDB\MongoDB.h" />
+    <ClInclude Include="Monster\Monster.h" />
+    <ClInclude Include="Monster\MonsterBuilder.h" />
+    <ClInclude Include="Monster\MonsterManager.h" />
     <ClInclude Include="Mysql\MysqlManager.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
@@ -95,6 +102,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Navi\Navigation.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="System\Time.h" />
@@ -160,7 +168,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>../Include;../Include/cpp_redis;../Include/Mysql;../Include/libmongoc-1.0;../Include/libbson-1.0;$(IncludePath)</IncludePath>
-    <LibraryPath>../Library;../Library/Mongo;../Library/MySQL;../Library/Redis;../Library/MySQL/vs14;$(LibraryPath)</LibraryPath>
+    <LibraryPath>../Library;../Library/Mongo;../Library/MySQL;../Library/Redis;../Library/MySQL/vs14;../Library/Navigation;$(LibraryPath)</LibraryPath>
     <ReferencePath>../Library/MySQL;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -169,7 +177,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>../Include;../Include/cpp_redis;../Include/Mysql;../Include/libmongoc-1.0;../Include/libbson-1.0;$(IncludePath)</IncludePath>
-    <LibraryPath>../Library;../Library/Mongo;../Library/MySQL;../Library/Redis;../Library/MySQL/vs14;$(LibraryPath)</LibraryPath>
+    <LibraryPath>../Library;../Library/Mongo;../Library/MySQL;../Library/Redis;../Library/MySQL/vs14;../Library/Navigation;$(LibraryPath)</LibraryPath>
     <ReferencePath>../Library/MySQL;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -194,12 +202,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../Include;../Include/cpp_redis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Include;../Include/cpp_redis;../Include/Navigation/DebugUtils;../Include/Navigation/Detour;../Include/Navigation/DetourCrowd;../Include/Navigation/DetourTileCache;../Include/Navigation/Recast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>Global.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../Library/Navigation/Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DebugUtils.lib;Detour.lib;DetourCrowd.lib;DetourTileCache.lib;Recast.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -230,7 +240,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../Include;../Include/cpp_redis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Include;../Include/cpp_redis;../Include/Navigation/DebugUtils;../Include/Navigation/Detour;../Include/Navigation/DetourCrowd;../Include/Navigation/DetourTileCache;../Include/Navigation/Recast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>Global.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -238,6 +248,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../Library/Navigation;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DebugUtils.lib;Detour.lib;DetourCrowd.lib;DetourTileCache.lib;Recast.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

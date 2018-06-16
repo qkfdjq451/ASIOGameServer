@@ -43,6 +43,7 @@ private:
 	bool bMovable;
 	float saveTime; 
 
+	std::weak_ptr<class Navigation> navi;
 	//»ı¼ºÀÚ
 public:
 	CharacterManager();
