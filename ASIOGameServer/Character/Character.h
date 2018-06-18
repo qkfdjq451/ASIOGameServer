@@ -51,10 +51,12 @@ public:
 	void Moving(float delta);
 	void GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb, vector<flatbuffers::Offset<FB::Move>> &vec);
 
+	std::weak_ptr<class CharacterManager> GetCharacterManager() { return cm; }
 protected:
 	int code;
 
 	std::weak_ptr<class User> user;
+	std::weak_ptr<class CharacterManager> cm;
 
 	int level;
 	std::string nickname;

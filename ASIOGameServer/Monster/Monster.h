@@ -15,7 +15,7 @@ public:
 	int GetNumber() { return monsterNumber; }
 	std::string GetName() { return nickname; }
 	float GetMaxHP() { return maxHp; }
-	float GetCurrentHp() { return currentHp.Get(); }
+	float GetCurrentHp() { return currentHp; }
 	float GetPower() { return power.Get(); }
 	float GetSpeed() { return speed; }
 	Vector3 GetPosition() { return position; }
@@ -24,7 +24,7 @@ public:
 	void SetNumber(int number) { monsterNumber = number; }
 	void SetName(std::string _name) { nickname = _name; }
 	void SetMaxHP(float _hp) { maxHp = _hp; }
-	void SetCurrentHp(float _hp) { currentHp.Set(_hp); }
+	void SetCurrentHp(float _hp) { currentHp =(_hp); }
 	void SetPower(float _power) { power.Set(_power); }
 	void SetSpeed(float _speed) { speed = _speed; }
 	void SetPosition(const Vector3& vec3) { position = vec3; }
@@ -37,6 +37,7 @@ public:
 
 	//기능
 	void Respawn();
+	void GetDamage(float Damage);
 
 
 	//이동 관련 변수와 함수
@@ -57,13 +58,11 @@ protected:
 	std::string nickname;
 	RespawnRange respawn_range;
 
-
-
-	float maxHp;
 	React<bool> bAlive;
-	React<float> currentHp;
-	React<float> power;
+	float maxHp;
+	float currentHp;
 
+	React<float> power;
 	float speed;
 	Vector3 position;
 

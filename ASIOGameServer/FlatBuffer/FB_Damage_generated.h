@@ -19,7 +19,8 @@ struct Damage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_DAMAGED_CODE = 8,
     VT_DAMAGED_TYPE = 10,
     VT_ATTACKTYPE = 12,
-    VT_DAMAGE = 14
+    VT_DAMAGE = 14,
+    VT_CURRENTHP = 16
   };
   int16_t attacker_code() const {
     return GetField<int16_t>(VT_ATTACKER_CODE, 0);
@@ -39,6 +40,9 @@ struct Damage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   float damage() const {
     return GetField<float>(VT_DAMAGE, 0.0f);
   }
+  float currentHP() const {
+    return GetField<float>(VT_CURRENTHP, 0.0f);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int16_t>(verifier, VT_ATTACKER_CODE) &&
@@ -47,6 +51,7 @@ struct Damage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<int8_t>(verifier, VT_DAMAGED_TYPE) &&
            VerifyField<int8_t>(verifier, VT_ATTACKTYPE) &&
            VerifyField<float>(verifier, VT_DAMAGE) &&
+           VerifyField<float>(verifier, VT_CURRENTHP) &&
            verifier.EndTable();
   }
 };
@@ -72,6 +77,9 @@ struct DamageBuilder {
   void add_damage(float damage) {
     fbb_.AddElement<float>(Damage::VT_DAMAGE, damage, 0.0f);
   }
+  void add_currentHP(float currentHP) {
+    fbb_.AddElement<float>(Damage::VT_CURRENTHP, currentHP, 0.0f);
+  }
   explicit DamageBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -91,8 +99,10 @@ inline flatbuffers::Offset<Damage> CreateDamage(
     int16_t damaged_code = 0,
     PlayerType damaged_type = PlayerType_Player,
     AttackState attackType = AttackState_Combo1,
-    float damage = 0.0f) {
+    float damage = 0.0f,
+    float currentHP = 0.0f) {
   DamageBuilder builder_(_fbb);
+  builder_.add_currentHP(currentHP);
   builder_.add_damage(damage);
   builder_.add_damaged_code(damaged_code);
   builder_.add_attacker_code(attacker_code);

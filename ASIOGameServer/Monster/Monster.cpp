@@ -1,6 +1,8 @@
 #include "../Global.h"
 #include "../Navi/Navigation.h"
 #include "Monster.h"
+#include "../Channel/Channel.h"
+#include "../Character/CharacterManager.h"
 
 Monster::Monster(int code)
 :code(code)
@@ -15,10 +17,12 @@ void Monster::BeginPlay()
 {
 	bAlive.InsertPostEvent([this](bool val)
 	{
+		//»ì¾Æ ³µÀ» ¶§
 		if (val)
 		{
 			Respawn();
 		}
+		//Á×¾úÀ» ¶§
 		else
 		{
 
@@ -26,6 +30,7 @@ void Monster::BeginPlay()
 	});
 	bAlive.Set(true);
 	bMove = false;
+
 }
 
 void Monster::PrevTick()
@@ -66,6 +71,30 @@ void Monster::Respawn()
 	}	
 }
 
+void Monster::GetDamage(float Damage)
+{
+	auto channel = GetParentComponent<Channel>();
+	if (!channel) return;
+	auto cm = channel->GetComponent<CharacterManager>();
+	if (!cm)	return;
+
+	currentHp -= Damage;
+	if (currentHp<0)
+	{
+		currentHp = 0;
+		bAlive.Set(true);
+	}
+	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+	auto damage = FB::DamageBuilder(*fbb);
+	damage.add_damaged_code(monsterNumber);
+	damage.add_damage(Damage);
+	damage.add_currentHP(currentHp);
+
+	fbb->Finish(damage.Finish());
+	cm->Async_SendAllCharacter(PS::CON_DAMAGE, fbb);
+
+}
+
 void Monster::SetForward(Vector3 _forward)
 {
 	_forward.Normalize();
@@ -86,7 +115,7 @@ void Monster::GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb, v
 	if (bChangePosition)
 	{
 		auto moveb=FB::MoveBuilder(*fbb);
-		moveb.add_code(code);
+		moveb.add_code(monsterNumber);
 		bMove ? moveb.add_state(FB::MoveState::MoveState_MOVING): moveb.add_state(FB::MoveState::MoveState_STOP);
 		moveb.add_foward(&forward.ToFBVector3());
 		moveb.add_position(&position.ToFBVector3());

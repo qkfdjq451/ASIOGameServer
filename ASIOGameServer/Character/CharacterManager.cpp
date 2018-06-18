@@ -61,6 +61,7 @@ bool CharacterManager::InsertCharacter(std::shared_ptr<class Character> characte
 		{
 			character->navi = navi;
 		}
+		character->cm = static_pointer_cast<CharacterManager>(shared_from_this());
 		characters.insert(std::make_pair(character->code, character));
 		return true;
 	}
@@ -127,6 +128,7 @@ bool CharacterManager::EraseCharacter(int key)
 		if (character)
 		{
 			character->navi.reset();
+			character->cm.reset();
 		}
 		characters.erase(key);
 		return true;

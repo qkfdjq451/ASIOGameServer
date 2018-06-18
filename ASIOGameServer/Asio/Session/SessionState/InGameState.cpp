@@ -20,7 +20,20 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 			auto user = ss->GetUser().lock();
 			if (ss != nullptr&&user != nullptr)
 			{
+				auto character = user->GetCharacter();
+				if (!character) return;
+				auto cm = character->GetCharacterManager().lock();
+				if (!cm) return;
 
+				auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+				auto charb = FB::ChatBuilder(*fbb);
+				auto chat = FB::GetChat(recv_data);
+				auto nick = fbb->CreateString(character->GetName());
+				auto message = fbb->CreateString(chat->message());
+				charb.add_nick(nick);
+				charb.add_message(message);
+				fbb->Finish(charb.Finish());
+				cm->Async_SendAllCharacter(PS::CHATTING_ALL, fbb);
 			}
 		}
 		break;
@@ -82,7 +95,7 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 		}
 	}
 	break;
-	case PS::Attack:
+	case PS::ATTACK:
 	{
 		auto ss = session.lock();
 		auto user = ss->GetUser().lock();
@@ -99,7 +112,7 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 				attackb.add_yaw(attack->yaw());
 				attackb.add_state(attack->state());
 				fbb->Finish(attackb.Finish());
-				cm->Async_SendAllCharacter(PS::Attack, fbb);
+				cm->Async_SendAllCharacter(PS::ATTACK, fbb);
 			}
 		}
 	}

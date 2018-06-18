@@ -27,8 +27,6 @@ void GameManager::EndPlay()
 	Time::Delete();
 }
 
-
-
 GameManager::GameManager()
 {
 

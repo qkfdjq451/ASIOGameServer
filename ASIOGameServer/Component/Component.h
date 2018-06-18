@@ -145,5 +145,10 @@ inline std::shared_ptr<T> Component::CreateComponent(_Types&&... _Args)
 template<typename T>
 inline std::shared_ptr<T> Component::GetParentComponent()
 {
-	return  std::dynamic_pointer_cast<T>(parent);	
+	auto result = std::dynamic_pointer_cast<T>(parent);
+	if (result == nullptr && parent != nullptr)
+	{
+		result = GetParentComponent<T>();
+	}
+	return  result;
 }

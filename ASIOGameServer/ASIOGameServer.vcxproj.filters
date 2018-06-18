@@ -64,6 +64,9 @@
     <Filter Include="Navi">
       <UniqueIdentifier>{b5225e85-0b03-4552-81d9-64755dd3a466}</UniqueIdentifier>
     </Filter>
+    <Filter Include="BehaviorTree">
+      <UniqueIdentifier>{09d79d9e-8db7-419f-9477-dcc286a8f4b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Asio\Asio.cpp">
@@ -150,6 +153,9 @@
     </ClCompile>
     <ClCompile Include="Navi\Navigation.cpp">
       <Filter>Navi</Filter>
+    </ClCompile>
+    <ClCompile Include="BehaviorTree\BehaviorTree.cpp">
+      <Filter>BehaviorTree</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="Navi\Navigation.h">
       <Filter>Navi</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviorTree\BehaviorTree.h">
+      <Filter>BehaviorTree</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

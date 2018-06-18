@@ -25,6 +25,7 @@
     <ClCompile Include="Asio\Session\SessionState\InGameState.cpp" />
     <ClCompile Include="Asio\Session\SessionState\LoginState.cpp" />
     <ClCompile Include="Asio\Session\SessionState\SessionState.cpp" />
+    <ClCompile Include="BehaviorTree\BehaviorTree.cpp" />
     <ClCompile Include="Channel\Channel.cpp" />
     <ClCompile Include="Character\Character.cpp" />
     <ClCompile Include="Character\CharacterManager.cpp" />
@@ -66,6 +67,7 @@
     <ClInclude Include="Asio\Session\SessionState\InGameState.h" />
     <ClInclude Include="Asio\Session\SessionState\LoginState.h" />
     <ClInclude Include="Asio\Session\SessionState\SessionState.h" />
+    <ClInclude Include="BehaviorTree\BehaviorTree.h" />
     <ClInclude Include="Channel\Channel.h" />
     <ClInclude Include="Character\Character.h" />
     <ClInclude Include="Character\CharacterManager.h" />

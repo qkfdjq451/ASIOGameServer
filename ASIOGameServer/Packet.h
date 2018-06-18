@@ -47,7 +47,9 @@ enum class Packet_Symbal : unsigned short
 	RESPAWN_MONSTER_VEC,
 
 	//공격관련
-	Attack,
+	ATTACK,
+	REQ_DAMAGE,
+	CON_DAMAGE,
 
 	TEST
 };
