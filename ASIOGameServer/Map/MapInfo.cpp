@@ -70,7 +70,7 @@ void MapInfo::BeginPlay()
 		}
 	}
 
-	for (int i = 1; i <= 3; i++)
+	for (int i = 1; i <= 1; i++)
 	{
 		auto channel = Component::CreateComponent<Channel>(mapCode,i);		
 		Attach(channel);
@@ -116,7 +116,7 @@ bool MapInfo::InsertCharacter(std::shared_ptr<class Character> character)
 
 std::shared_ptr<class Channel> MapInfo::GetChannel(int index)
 {
-	if (channels.size() <= index || index < 0)
+	if (channels.size() < index || index < 0)
 		return nullptr;
 	return channels[index - 1].lock();
 }

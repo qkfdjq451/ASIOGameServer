@@ -27,6 +27,8 @@
 #include <algorithm>
 #include <random>
 #include <fstream>
+#include <stack>
+#include <deque>
 //전역 파일 위치
 const std::string NaviDatas = "../NavigationData/";
 

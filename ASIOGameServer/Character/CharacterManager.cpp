@@ -55,12 +55,7 @@ bool CharacterManager::InsertCharacter(std::shared_ptr<class Character> characte
 {
 	auto result = characters.find(character->code);
 	if (result == characters.end())
-	{
-		auto nv = navi.lock();
-		if (nv)
-		{
-			character->navi = navi;
-		}
+	{	
 		character->cm = static_pointer_cast<CharacterManager>(shared_from_this());
 		characters.insert(std::make_pair(character->code, character));
 		return true;
@@ -238,6 +233,32 @@ void CharacterManager::EndPlay()
 	{
 
 	}
+}
+
+std::pair<int, float> CharacterManager::SearchNearPlayer(Vector3 vec)
+{
+	float max = MIN_flt;
+	int code = -1;
+	for (auto character : characters)
+	{
+		auto ch = character.second.lock();
+		if (!ch) continue;
+		float distance = Vector3::Distance(ch->GetPosition(), vec);
+		if (distance > max)
+		{
+			max = distance;
+			code = ch->GetCode();
+		}
+	}
+	return make_pair(code, max);
+}
+
+std::shared_ptr<class Character> CharacterManager::GetCharacter(int key)
+{
+	auto result = characters.find(key);
+	if (result != characters.end())
+		return result->second.lock();
+	return nullptr;
 }
 
 CharacterManager::CharacterManager()

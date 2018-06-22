@@ -13,6 +13,7 @@
 #include "./FlatBuffer/FB_Move_Vec_generated.h"
 #include "./FlatBuffer/FB_Attack_generated.h"
 #include "./FlatBuffer/FB_Damage_generated.h"
+#include "./FlatBuffer/FB_Damage_Vec_generated.h"
 
 #include "./FlatBuffer/FB_Monster_generated.h"
 #include "./FlatBuffer/FB_Monster_Vec_generated.h"
@@ -46,10 +47,15 @@ enum class Packet_Symbal : unsigned short
 	RESPAWN_MONSTER,
 	RESPAWN_MONSTER_VEC,
 
+	MONSTER_MOVING_VECTOR,
+
 	//공격관련
 	ATTACK,
 	REQ_DAMAGE,
 	CON_DAMAGE,
+
+	REQ_DAMAGE_VECTOR,
+	CON_DAMAGE_VECTOR,
 
 	TEST
 };

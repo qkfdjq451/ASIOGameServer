@@ -2,7 +2,7 @@
 
 #include "../Global.h"
 
-class UserManager : public Component ,public std::enable_shared_from_this<UserManager>
+class UserManager : public Component 
 {
 public:
 	//Post 함수
@@ -12,7 +12,6 @@ public:
 
 	//전 UserManager에서 User 삭제
 	bool RemoveUser(int key);
-
 	void LoopFunction(std::function<void(std::shared_ptr<class User>)> func);
 
 private:

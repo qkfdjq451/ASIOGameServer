@@ -83,8 +83,8 @@ void Character::Init()
 			if (mm)
 			{
 				auto mapinfo = mm->GetMapInfo(mapKey.Get());
-				mapinfo->GetChannel(key)->Async_InsertCharacter(self);
-
+				auto channel = mapinfo->GetChannel(key); 
+				channel->Async_InsertCharacter(self);
 			}
 		}
 
@@ -93,8 +93,6 @@ void Character::Init()
 
 void Character::Clear()
 {
-	hp.ClearEvent();
-	power.ClearEvent();
 	mapKey.ClearEvent();
 	channel.ClearEvent();
 }

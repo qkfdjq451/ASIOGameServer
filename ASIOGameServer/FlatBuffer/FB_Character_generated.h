@@ -21,8 +21,9 @@ struct Character FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_LEVEL = 12,
     VT_HP = 14,
     VT_POWER = 16,
-    VT_SPEED = 18,
-    VT_MAPCODE = 20
+    VT_DEFENSE = 18,
+    VT_SPEED = 20,
+    VT_MAPCODE = 22
   };
   int32_t code() const {
     return GetField<int32_t>(VT_CODE, 0);
@@ -45,6 +46,9 @@ struct Character FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   float power() const {
     return GetField<float>(VT_POWER, 0.0f);
   }
+  float defense() const {
+    return GetField<float>(VT_DEFENSE, 0.0f);
+  }
   float speed() const {
     return GetField<float>(VT_SPEED, 0.0f);
   }
@@ -61,6 +65,7 @@ struct Character FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<int32_t>(verifier, VT_LEVEL) &&
            VerifyField<float>(verifier, VT_HP) &&
            VerifyField<float>(verifier, VT_POWER) &&
+           VerifyField<float>(verifier, VT_DEFENSE) &&
            VerifyField<float>(verifier, VT_SPEED) &&
            VerifyField<int32_t>(verifier, VT_MAPCODE) &&
            verifier.EndTable();
@@ -91,6 +96,9 @@ struct CharacterBuilder {
   void add_power(float power) {
     fbb_.AddElement<float>(Character::VT_POWER, power, 0.0f);
   }
+  void add_defense(float defense) {
+    fbb_.AddElement<float>(Character::VT_DEFENSE, defense, 0.0f);
+  }
   void add_speed(float speed) {
     fbb_.AddElement<float>(Character::VT_SPEED, speed, 0.0f);
   }
@@ -112,17 +120,19 @@ struct CharacterBuilder {
 inline flatbuffers::Offset<Character> CreateCharacter(
     flatbuffers::FlatBufferBuilder &_fbb,
     int32_t code = 0,
-    CharacterType type = CharacterType_Sinbi,
+    CharacterType type = CharacterType_NONE,
     flatbuffers::Offset<flatbuffers::String> nick = 0,
     const Vec3 *position = 0,
     int32_t level = 0,
     float hp = 0.0f,
     float power = 0.0f,
+    float defense = 0.0f,
     float speed = 0.0f,
     int32_t mapcode = 0) {
   CharacterBuilder builder_(_fbb);
   builder_.add_mapcode(mapcode);
   builder_.add_speed(speed);
+  builder_.add_defense(defense);
   builder_.add_power(power);
   builder_.add_hp(hp);
   builder_.add_level(level);
@@ -136,12 +146,13 @@ inline flatbuffers::Offset<Character> CreateCharacter(
 inline flatbuffers::Offset<Character> CreateCharacterDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     int32_t code = 0,
-    CharacterType type = CharacterType_Sinbi,
+    CharacterType type = CharacterType_NONE,
     const char *nick = nullptr,
     const Vec3 *position = 0,
     int32_t level = 0,
     float hp = 0.0f,
     float power = 0.0f,
+    float defense = 0.0f,
     float speed = 0.0f,
     int32_t mapcode = 0) {
   return FB::CreateCharacter(
@@ -153,6 +164,7 @@ inline flatbuffers::Offset<Character> CreateCharacterDirect(
       level,
       hp,
       power,
+      defense,
       speed,
       mapcode);
 }

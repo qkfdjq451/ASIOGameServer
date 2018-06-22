@@ -68,11 +68,13 @@ void Component::Update()
 	{
 		Tick();		
 	}
+
 	else if (state == ComponentState::Create)
 	{
 		BeginPlay();
 		state = ComponentState::Alive;		
 	}
+
 	else if (state == ComponentState::Destroy)
 	{
 		EndPlay();

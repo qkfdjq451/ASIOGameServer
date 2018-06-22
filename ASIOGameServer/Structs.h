@@ -11,7 +11,7 @@ struct Vector3
 	Vector3(float x = 0, float y = 0, float z = 0)
 		:x(x), y(y), z(z) {}
 	Vector3(std::string x, std::string y, std::string z )
-		:x((float)atof(x.c_str())), y((float)atof(y.c_str())), z((float)atof(z.c_str())) {}
+		:x((float)stof(x)), y((float)stof(y)), z((float)stof(z)) {}
 	FB::Vec3 ToFBVector3()
 	{
 		return FB::Vec3(x, y, z);
@@ -101,12 +101,22 @@ struct Vector3
 		return str;
 	}
 
-	void ToUnrealLocation()
+	Vector3 ToUnrealLocation()
 	{
 		Vector3 temp = *this;
-		this->x = -temp.x;
-		this->y = -temp.z;
-		this->z = temp.y;
+		this->x = -temp.x * 100.0f;
+		this->y = -temp.z * 100.0f;
+		this->z = temp.y * 100.0f;
+		return *this;
+	}
+
+	Vector3 ToGLLocation()
+	{
+		Vector3 temp = *this;
+		this->x = -temp.x * 0.01f;
+		this->y = temp.z * 0.01f;
+		this->z = -temp.y * 0.01f;
+		return *this;
 	}
 
 	static float Distance(Vector3 first, Vector3 second)

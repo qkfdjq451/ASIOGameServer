@@ -46,13 +46,15 @@ inline const char *EnumNameColor(Color e) {
 }
 
 enum CharacterType {
-  CharacterType_Sinbi = 0,
-  CharacterType_MIN = CharacterType_Sinbi,
+  CharacterType_NONE = 0,
+  CharacterType_Sinbi = 1,
+  CharacterType_MIN = CharacterType_NONE,
   CharacterType_MAX = CharacterType_Sinbi
 };
 
-inline const CharacterType (&EnumValuesCharacterType())[1] {
+inline const CharacterType (&EnumValuesCharacterType())[2] {
   static const CharacterType values[] = {
+    CharacterType_NONE,
     CharacterType_Sinbi
   };
   return values;
@@ -60,6 +62,7 @@ inline const CharacterType (&EnumValuesCharacterType())[1] {
 
 inline const char * const *EnumNamesCharacterType() {
   static const char * const names[] = {
+    "NONE",
     "Sinbi",
     nullptr
   };

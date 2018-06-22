@@ -7,6 +7,8 @@
 #include "../Map/MapInfo.h"
 #include "../User/User.h"
 #include "../Monster/MonsterBuilder.h"
+#include "../Channel/Channel.h"
+#include "../Character/CharacterManager.h"
 
 //std::shared_ptr<flatbuffers::FlatBufferBuilder> CharacterManager::Make_FBB_All_CharacterInfo()
 //{
@@ -34,6 +36,15 @@
 //	return fbb;
 //}
 
+void MonsterManager::Async_Function(std::shared_ptr<Func> func)
+{
+	async(std::launch::async, [this, func]
+	{
+		std::lock_guard<std::mutex> lock(mt);
+		req_func_list.push_back(func);
+	});
+}
+
 void MonsterManager::BeginPlay()
 {
 	
@@ -41,13 +52,48 @@ void MonsterManager::BeginPlay()
 
 void MonsterManager::PrevTick()
 {
-	
+	std::vector<std::shared_ptr<Func>>  copy_func_list;
+	{
+		std::lock_guard<std::mutex> lock(mt);
+		copy_func_list.assign(req_func_list.begin(), req_func_list.end());
+		req_func_list.clear();
+	}
 
+	for (auto func : copy_func_list)
+	{
+		func->func();
+	}
+	copy_func_list.clear();
 }
 
 void MonsterManager::Tick()
 {
 	PrevTick();
+	saveTime += Time::Delta();
+	if (saveTime > 0.4)
+	{
+		saveTime = 0;
+		auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+		vector<flatbuffers::Offset<FB::Move>> moveVec;
+		for (auto monster : monsters)
+		{
+			auto mon = monster.second.lock();
+			mon->GetMoveInfo(fbb, moveVec);
+		}
+
+		if (moveVec.size() > 0)
+		{
+			auto vec = fbb->CreateVector(moveVec);
+			auto movebb = FB::CreateMoveVec(*fbb, vec);
+			fbb->Finish(movebb);
+
+			auto channel = GetParentComponent<Channel>();
+			if (!channel) return;
+			auto cm = channel->GetComponent<CharacterManager>();
+			if (!cm) return;
+			cm->Async_SendAllCharacter(PS::MONSTER_MOVING_VECTOR, fbb);
+		}
+	}
 }
 
 void MonsterManager::EndPlay()

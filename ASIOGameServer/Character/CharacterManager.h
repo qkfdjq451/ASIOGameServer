@@ -28,12 +28,15 @@ public:
 	void PrevTick();
 	void Tick() override;
 	void EndPlay() override;
-
-	
+		
 
 	void SetMovable(bool _b) { bMovable = _b; }
+
+	std::pair<int, float> SearchNearPlayer(Vector3 vec);
+	std::shared_ptr<class Character> GetCharacter(int key);
 private:
 	std::unordered_map<int, std::weak_ptr<class Character>> characters;	
+
 	std::vector<std::shared_ptr<class Character>> req_Insert_list;
 	std::vector<int> req_erase_list;
 	std::vector<pair<PS, std::shared_ptr<flatbuffers::FlatBufferBuilder>>> req_send_all;
@@ -43,7 +46,6 @@ private:
 	bool bMovable;
 	float saveTime; 
 
-	std::weak_ptr<class Navigation> navi;
 	//»ý¼ºÀÚ
 public:
 	CharacterManager();

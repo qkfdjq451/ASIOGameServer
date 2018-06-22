@@ -8,12 +8,16 @@
 #include"GameManager/GameManager.h"
 #include "./Monster/MonsterBuilder.h"
 #include "./Navi/Navigation.h"
+#include "./DamageFormula/DamageFormula.h"
+#include "./StatusManager/StatusManager.h"
 
 int main(int argc, char* argv[])
 {
 	MySQLManager::Create();
 	TimerManager::Create();
 	EventManager::Create();
+	DamageFormula::Create();
+	StatusManager::Create();
 	MonsterBuilder::Init();
 	Navigation::Init();
 	auto gm = std::make_shared<GameManager>();
@@ -35,7 +39,8 @@ int main(int argc, char* argv[])
 	{
 		std::cerr << "Exception: " << e.what() << "\n";
 	}
-
+	StatusManager::Delete();
+	DamageFormula::Delete();
 	EventManager::Delete();
 	TimerManager::Delete();
 	MySQLManager::Delete();

@@ -3,6 +3,7 @@
 random_device Navigation::rn;
  mt19937_64 Navigation::rnd(rn());
  dtQueryFilter Navigation::filter;
+ Vector3 Navigation::m_polyPickExt(2,4,2);
 
 bool Navigation::Import(unsigned char * navData, int navDataSize)
 {

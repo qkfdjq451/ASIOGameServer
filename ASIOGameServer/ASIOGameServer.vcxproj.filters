@@ -67,6 +67,12 @@
     <Filter Include="BehaviorTree">
       <UniqueIdentifier>{09d79d9e-8db7-419f-9477-dcc286a8f4b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DamageFormula">
+      <UniqueIdentifier>{913eb993-793f-4430-b9bf-a9df574cb712}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="StatusManager">
+      <UniqueIdentifier>{e0bbba24-15d4-4309-b095-25d582e8c006}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Asio\Asio.cpp">
@@ -156,6 +162,12 @@
     </ClCompile>
     <ClCompile Include="BehaviorTree\BehaviorTree.cpp">
       <Filter>BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="DamageFormula\DamageFormula.cpp">
+      <Filter>DamageFormula</Filter>
+    </ClCompile>
+    <ClCompile Include="StatusManager\StatusManager.cpp">
+      <Filter>StatusManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -268,6 +280,12 @@
     </ClInclude>
     <ClInclude Include="BehaviorTree\BehaviorTree.h">
       <Filter>BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageFormula\DamageFormula.h">
+      <Filter>DamageFormula</Filter>
+    </ClInclude>
+    <ClInclude Include="StatusManager\StatusManager.h">
+      <Filter>StatusManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -31,6 +31,7 @@
     <ClCompile Include="Character\CharacterManager.cpp" />
     <ClCompile Include="Cipher\CipherManager.cpp" />
     <ClCompile Include="Component\Component.cpp" />
+    <ClCompile Include="DamageFormula\DamageFormula.cpp" />
     <ClCompile Include="EventManager\EventManager.cpp" />
     <ClCompile Include="EventManager\TimeManager.cpp" />
     <ClCompile Include="GameManager\GameManager.cpp" />
@@ -55,6 +56,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Navi\Navigation.cpp" />
+    <ClCompile Include="StatusManager\StatusManager.cpp" />
     <ClCompile Include="System\Time.cpp" />
     <ClCompile Include="User\User.cpp" />
     <ClCompile Include="User\UserManager.cpp" />
@@ -73,6 +75,7 @@
     <ClInclude Include="Character\CharacterManager.h" />
     <ClInclude Include="Cipher\CipherManager.h" />
     <ClInclude Include="Component\Component.h" />
+    <ClInclude Include="DamageFormula\DamageFormula.h" />
     <ClInclude Include="EventManager\EventManager.h" />
     <ClInclude Include="EventManager\React.h" />
     <ClInclude Include="EventManager\TimeManager.h" />
@@ -106,6 +109,7 @@
     </ClInclude>
     <ClInclude Include="Navi\Navigation.h" />
     <ClInclude Include="Packet.h" />
+    <ClInclude Include="StatusManager\StatusManager.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="System\Time.h" />
     <ClInclude Include="User\User.h" />

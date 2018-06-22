@@ -2,6 +2,11 @@
 #include "LoginState.h"
 #include "../../../User/User.h"
 #include "../../../Character/Character.h"
+#include "../../../StatusManager/StatusManager.h"
+
+
+
+
 
 void LoginState::On_Read(const PS & symbol, void * recv_data, unsigned short size)
 {
@@ -25,20 +30,15 @@ void LoginState::On_Read(const PS & symbol, void * recv_data, unsigned short siz
 						if (user)
 						{
 							//Character °´Ã¼ ¸¸µé±â
-							auto character = std::make_shared<Character>(user, charcode);
-							int index = 0;
+							auto character = std::make_shared<Character>(user, charcode);							
 							
-							character->SetName(vec[0][2].second);
-							character->SetLevel(atoi(vec[0][3].second.c_str()));
-							character->SetHP(atof(vec[0][4].second.c_str()));
-							character->SetPower(atof(vec[0][5].second.c_str()));
-							character->SetSpeed(atof(vec[0][6].second.c_str()));
-							//character->SetMapKey(atoi(vec[0][7].second.c_str()));
-							character->SetMapKey(3);
-
-							auto position = Vector3(vec[0][8].second, vec[0][9].second, vec[0][10].second);
-							position.y+= 100*character->GetCode();
-							printf("%f, %f, %f \n", position.x, position.y, position.z);
+							character->SetTypeCode(stoi(vec[0][2].second));
+							character->SetName(vec[0][3].second);
+							character->SetLevel(stoi(vec[0][4].second));
+														
+							StatusManager::Get()->SetStatus(character);							
+							character->SetMapKey(stoi(vec[0][5].second));
+							auto position = Vector3(vec[0][6].second, vec[0][7].second, vec[0][8].second);																					
 							character->SetPosition(position);							
 							user->SetCharacer(character);
 							character->Init();
@@ -49,10 +49,10 @@ void LoginState::On_Read(const PS & symbol, void * recv_data, unsigned short siz
 							auto charB = FB::CharacterBuilder(*fbb);
 
 							charB.add_code(charcode++);
-							charB.add_type(FB::CharacterType::CharacterType_Sinbi);
+							charB.add_type((FB::CharacterType)character->GetTypeCode());
 							charB.add_nick(nick);
 							charB.add_position(&character->GetPosition().ToFBVector3());
-							charB.add_hp(character->GetHP());
+							charB.add_hp(character->GetMaxHP());
 							charB.add_power(character->GetPower());
 							charB.add_speed(character->GetSpeed());
 							charB.add_mapcode(character->GetMapKey());

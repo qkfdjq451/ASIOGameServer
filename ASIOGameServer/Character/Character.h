@@ -14,26 +14,32 @@ public:
 	//Á¢±ÙÀÚ
 	//Get
 	int GetCode() { return code; }
+	int GetTypeCode() { return characterTypeCode; }
 	int GetLevel() { return level; }
 	std::string GetName() { return nickname; }
-	float GetHP() { return hp.Get(); }
-	float GetPower() { return power.Get(); }
+	float GetMaxHP() { return maxHP; }
+	float GetCurrentHP() { return currentHP; }
+	float GetPower() { return power; }
+	float GetDefense() { return defense; }
 	float GetCurrentSpeed() { return currentSpeed; }
 	float GetSpeed() { return maxSpeed; }
 	Vector3 GetPosition() { return position; }
 	int GetChannel() { return channel.Get(); }
 	int GetMapKey() { return mapKey.Get(); }
-	
 
+	
 	//Set
+	void SetTypeCode(int _code) { characterTypeCode = _code; }
 	void SetLevel(int _level) { level = _level; }
 	void SetMapKey(int mapkey) { mapKey.Set(mapkey); }
 	void SetChannel(int number) { channel.Set(number); }
 	void SetName(std::string _name) { nickname = _name; }
+	
+	void SetMaxHP(float _hp) { maxHP = _hp; }
+	void SetCurrentHP(float _hp) { currentHP = _hp; }
 
-
-	void SetHP(float _hp) { hp.Set(_hp); }
-	void SetPower(float _power) { power.Set(_power); }
+	void SetPower(float _power) { power = _power; }
+	void SetDefense(float _defense) { defense = _defense; }
 
 	void SetCurrentSpeed(float _speed) { currentSpeed = _speed; }
 	void SetSpeed(float _speed) { maxSpeed = _speed; }
@@ -52,8 +58,10 @@ public:
 	void GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb, vector<flatbuffers::Offset<FB::Move>> &vec);
 
 	std::weak_ptr<class CharacterManager> GetCharacterManager() { return cm; }
+
 protected:
 	int code;
+	int characterTypeCode;
 
 	std::weak_ptr<class User> user;
 	std::weak_ptr<class CharacterManager> cm;
@@ -61,12 +69,15 @@ protected:
 	int level;
 	std::string nickname;
 	
+	float currentHP;
+	float maxHP;
 
-	React<float> hp;
-	React<float> power;
+	float defense;
+	float power;
 
 	float maxSpeed;
 	float currentSpeed;
+
 
 
 	Vector3 position;

@@ -16,7 +16,8 @@ Channel::Channel(int mapcode, int channelNumber)
 
 void Channel::Async_InsertCharacter(std::shared_ptr<class Character> character)
 {
-	async(std::launch::async, [this, character]
+	auto self = shared_from_this();
+	async(std::launch::async, [self,this, character]
 	{
 		std::lock_guard<std::mutex> lock(mt);
 		req_Insert_list.push_back(character);
@@ -25,7 +26,8 @@ void Channel::Async_InsertCharacter(std::shared_ptr<class Character> character)
 
 void Channel::Async_EraseCharacter(int key)
 {
-	async(std::launch::async, [this, key]
+	auto self = shared_from_this();
+	async(std::launch::async, [self,this, key]
 	{
 		std::lock_guard<std::mutex> lock(mt);
 		req_erase_list.push_back(key);

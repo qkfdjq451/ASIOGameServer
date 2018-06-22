@@ -54,7 +54,9 @@ public:
 	static mt19937_64 rnd;
 	static float frand();
 	static float frand2();
+	static Vector3 GetPolyPickExt() { return m_polyPickExt; };
 private:
 	static dtQueryFilter filter;
 	static random_device rn;
+	static Vector3 m_polyPickExt;
 };

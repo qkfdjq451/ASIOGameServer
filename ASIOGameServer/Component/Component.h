@@ -10,7 +10,6 @@ enum class ComponentState
 class Component : public std::enable_shared_from_this<Component>
 {
 public:
-	
 	Component();
 	virtual ~Component();
 
@@ -38,10 +37,6 @@ public:
 	
 	//삭제요청
 	void Distroy();
-
-	//
-
-	
 
 protected:
 	virtual void BeginPlay() {};
@@ -145,10 +140,11 @@ inline std::shared_ptr<T> Component::CreateComponent(_Types&&... _Args)
 template<typename T>
 inline std::shared_ptr<T> Component::GetParentComponent()
 {
+	if (!parent) return nullptr;
 	auto result = std::dynamic_pointer_cast<T>(parent);
 	if (result == nullptr && parent != nullptr)
 	{
-		result = GetParentComponent<T>();
+		result = parent->GetParentComponent<T>();
 	}
 	return  result;
 }
