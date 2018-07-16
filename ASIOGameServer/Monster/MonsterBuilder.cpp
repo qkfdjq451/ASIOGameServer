@@ -20,6 +20,7 @@ void MonsterBuilder::Init()
 				monster.name = (info[1].second);
 				monster.HP = (float)stof(info[2].second);
 				monster.Power = (float)stof(info[3].second);
+				monster.Speed = (float)stof(info[4].second);
 				infos.insert(make_pair(monster.code, monster));
 			}
 		}
@@ -43,8 +44,7 @@ std::shared_ptr<class Monster> MonsterBuilder::CreateMonster(int monstercode,int
 			monster->SetName(info.name);
 			monster->SetMaxHP(info.HP);
 			monster->SetPower(info.Power);
-			monster->respawnTime = 10.0f;
-			monster->speed = 400.0f;
+			monster->SetSpeed(info.Speed);
 			monster->ai = InsertAI(monster);
 		}
 		return monster;
@@ -74,6 +74,9 @@ BTNode* MonsterBuilder::InsertAI(std::shared_ptr<class Monster> monster)
 				.sequence(Monster::State::ATTACK)
 					.actor(std::bind(&Monster::Attack, monster, std::placeholders::_1))
 				.end()				
+				.sequence(Monster::State::DIE)
+					.actor(std::bind(&Monster::Die, monster, std::placeholders::_1))
+				.end()
 			.end()
 		.end()
 		.Finish();

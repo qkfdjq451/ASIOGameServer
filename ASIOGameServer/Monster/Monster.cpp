@@ -12,13 +12,12 @@ Monster::Monster(int code)
 {
 	bMove = false;
 	bChangePosition = false;
+	bAttacking = false;
 	state = IDLE;
 	idleState = HOLD;
-	respawnTime=0;
 	curRespawnTime=0;
 	curIdleTime = 0;	
-	idleTime = 5;
-	attackCoolTime = std::chrono::system_clock::now();
+	idleTime = 5;	
 }
 
 Monster::~Monster()
@@ -32,7 +31,8 @@ Monster::~Monster()
 
 void Monster::BeginPlay()
 {
-	bAlive.InsertPostEvent([this](bool val)
+	auto self = shared_from_this();
+	bAlive.InsertPostEvent([self, this](bool val)
 	{
 		//살아 났을 때
 		if (val)
@@ -42,7 +42,8 @@ void Monster::BeginPlay()
 		//죽었을 때
 		else
 		{
-
+			Dead();
+			cout << "죽어랏!" << endl;
 		}
 	});
 	bAlive.Set(true);
@@ -63,34 +64,96 @@ void Monster::Tick()
 
 void Monster::EndPlay()
 {
+	bAlive.ClearEvent();
 }
 
 void Monster::Respawn()
 {
+	curRespawnTime = 0;
+	currentHp = maxHp;
+	state = IDLE;
+	bAttacking = false;
 	auto nv = navi.lock();
 	if (nv)
 	{
+		Vector3 start = respawnPosition;
 		Vector3 spawnPosition;
-		nv->GetQuery()->findRandomPoint(&Navigation::GetQueryFilter(), Navigation::frand, &m_startRef, (float*)&spawnPosition);
+		start.ToGLLocation();
+
+		nv->GetQuery()->findNearestPoly((float*)&start,
+			(float*)&Navigation::GetPolyPickExt(), &Navigation::GetQueryFilter(), &m_startRef, 0);
+
+		nv->GetQuery()->findRandomPointAroundCircle(m_startRef, (float*)&start, respawnRange/100.f,
+			&Navigation::GetQueryFilter(), Navigation::frand,
+			&m_endRef, (float*)&spawnPosition);
+
 		position = spawnPosition.ToUnrealLocation();
-
 	}
-	else
-	{	
-		uniform_real_distribution<float> rangeX(respawn_range.minX, respawn_range.maxX);
-		uniform_real_distribution<float> rangeY(respawn_range.minY, respawn_range.maxY);
-		Vector3 pos;
-		pos.x = rangeX(Navigation::rnd);
-		pos.y = rangeY(Navigation::rnd);
-
-		position = pos;
-	}	
+	
+	auto channel = GetParentComponent<Channel>();
+	if (!channel) return;
+	auto cm = channel->GetComponent<CharacterManager>();
+	if (!cm) return;
+	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
+	auto nick = fbb->CreateString(nickname);
+	auto monsterB = FB::MonsterBuilder(*fbb);
+	SetMonsterBuilder(&monsterB);	
+	monsterB.add_nick(nick);
+	fbb->Finish(monsterB.Finish());
+	cm->Async_SendAllCharacter(PS::RESPAWN_MONSTER, fbb);
 }
 
-bool Monster::GetDamage(std::shared_ptr<class Character> attacker, FB::AttackState state)
+void Monster::Dead()
 {
-	DamageFormula::Get()->CheckRange(attacker->Get(), state,)
-	return false;
+	auto channel = GetParentComponent<Channel>();
+	if (!channel) return;
+	auto cm = channel->GetComponent<CharacterManager>();
+	if (!cm) return;
+	
+	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
+	fbb->Finish(FB::CreateDie(*fbb, monsterNumber, FB::PlayerType::PlayerType_Monster));
+	cm->Async_SendAllCharacter(PS::DIE, fbb);
+}
+
+void Monster::SetMonsterBuilder(FB::MonsterBuilder * mb)
+{
+	mb->add_code(code);
+	mb->add_CurrentHP(currentHp);
+	mb->add_MaxHp(maxHp);
+	mb->add_number(monsterNumber);
+	mb->add_position(&position.ToFBVector3());
+	mb->add_power(power);
+	mb->add_speed(speed);
+}
+
+bool Monster::CheckRange(std::shared_ptr<class Character> attacker, FB::AttackState state)
+{
+	if (DamageFormula::Get()->CheckRange(attacker->GetTypeCode(), state, attacker->GetPosition(), position) == false)
+		return false;
+	return true;
+}
+
+bool Monster::GetDamage(std::shared_ptr<class Character> attacker, FB::AttackState state, FB::DamageBuilder * db)
+{
+	if (bAlive.Get() == false)
+		return false;
+	float temp, damageval;
+	if (DamageFormula::Get()->GetCurDamage(attacker->GetTypeCode(), state, 1, attacker->GetPower(), damageval, temp)==false)
+		return false;
+	currentHp -= damageval;
+	if (currentHp <= 0)
+		bAlive.Set(false);
+	if (db)
+	{
+		db->add_attacker_code(attacker->GetCode());
+		db->add_attacker_type(FB::PlayerType::PlayerType_Player);
+		db->add_attackType(state);
+		db->add_currentHP(currentHp);
+		db->add_damage(damageval);
+		db->add_damaged_type(FB::PlayerType::PlayerType_Monster);
+		db->add_damaged_code(monsterNumber);
+	}
+	return true;
 }
 
 
@@ -143,7 +206,7 @@ bool Monster::FindPath(Vector3 dest)
 		Vector3 straightPath[256];
 		int straightPathCount=0;
 		//unsigned char m_straightPathFlags[256];
-		//dtPolyRef m_straightPathPolys[256];
+		dtPolyRef straightPathPolys[256];
 		
 		//시작점 찾기
 		query->findNearestPoly((float*)&glPos,
@@ -156,11 +219,16 @@ bool Monster::FindPath(Vector3 dest)
 		query->findPath(m_startRef, m_endRef,
 			(float*)&glPos, (float*)&destination, &Navigation::GetQueryFilter(), path, &pathCount, 256);
 
+		
+
 		auto result= query->findStraightPath((float*)&glPos, (float*)&destination, path, pathCount, 
-			(float*)straightPath, 0, 0, &straightPathCount, 256, DT_STRAIGHTPATH_ALL_CROSSINGS);
+			(float*)straightPath, 0, straightPathPolys, &straightPathCount, 256, DT_STRAIGHTPATH_ALL_CROSSINGS);
 
 		for (int i = 0; i < straightPathCount; i++)
 		{
+			float height;
+			query->getPolyHeight(straightPathPolys[i], (float*)&straightPath[i], &height);
+			straightPath[i].y = height;
 			paths.push_back(straightPath[i].ToUnrealLocation());
 		}
 
@@ -184,6 +252,7 @@ bool Monster::FindPath(Vector3 dest)
 
 		return true;
 	}
+	return false;
 }
 
 
@@ -192,7 +261,15 @@ bool Monster::UpdateState(float delta)
 	if (bAlive.Get() == false)
 	{
 		state = State::DIE;
+		if (curRespawnTime > respawnTime)
+			bAlive.Set(true);
 		return true;
+	}
+
+	if (bAttacking)
+	{
+		state = State::ATTACK;
+		bMove = false;
 	}
 
 	auto channel = GetParentComponent<Channel>();
@@ -202,9 +279,11 @@ bool Monster::UpdateState(float delta)
 	auto result = cm->SearchNearPlayer(position);
 	if (result.first != -1 && result.second < 1000)
 	{
-		if (result.second > 50)
+		if (result.second > 100)
 		{
 			state = State::CHASE;
+			//cout << "타겟 케릭터 코드 : " << result.first << endl;
+			//cout << "타겟 케릭터 거리 : " << result.second << endl;
 			paths.clear();
 			bMove = true;
 			targetCode = result.first;
@@ -306,17 +385,43 @@ bool Monster::Chase(float delta)
 
 bool Monster::Attack(float delta)
 {
-	std::chrono::duration<float> sec = attackCoolTime - std::chrono::system_clock::now();
-	if (sec.count() < 1000) 	return true;	
-	attackCoolTime = std::chrono::system_clock::now();
-	auto channel = GetParentComponent<Channel>();
-	if (!channel) return false;
-	auto cm = channel->GetComponent<CharacterManager>();
-	if (!cm) return false;
-	//auto fbb = shared_ptr<flatbuffers::FlatBufferBuilder>();
-	//auto attack
-	//cm->Async_SendAllCharacter();
-	
+	if (bAttacking==true)
+	{
+		std::chrono::duration<float> sec =std::chrono::system_clock::now()- attackCoolTime;
+		if (sec.count() < 1.7)
+		{
+			return true;
+		}
+		else
+		{
+			bAttacking = false;		
+			return true;
+		}
+	}
+	else
+	{
+		bAttacking = true;
+		attackCoolTime = std::chrono::system_clock::now();
+		auto channel = GetParentComponent<Channel>();
+		if (!channel) return false;
+		auto cm = channel->GetComponent<CharacterManager>();
+		if (!cm) return false;
+		//TODO : 플레이어들에게 몬스터가 공격을 시작했 다는 것을 보내주기
+		auto fbb = make_shared<flatbuffers::FlatBufferBuilder>();
+		auto attackB = FB::AttackBuilder(*fbb);
+		attackB.add_code(monsterNumber);
+		attackB.add_state(FB::AttackState::AttackState_Combo1);
+		attackB.add_targetCode(targetCode);
+		fbb->Finish(attackB.Finish());
+		cm->Async_SendAllCharacter(PS::MONSTER_ATTACK, fbb);
+	}
+
+	return false;
+}
+
+bool Monster::Die(float delta)
+{
+	curRespawnTime += delta;
 	return false;
 }
 

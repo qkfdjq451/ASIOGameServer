@@ -31,11 +31,31 @@ void MySQLManager::Async_Query(const char * sql, std::function<void(QVector&, bo
 	});
 }
 
-QVector MySQLManager::Query(const char * sql)
+void MySQLManager::Async_Query_None_Result(const char * sql, std::function<void(bool)> func)
+{
+	std::async(std::launch::async, [this, sql, func]
+	{
+		bool result = mysql_pool->executeSql(sql);
+		func(result);
+	});
+}
+
+
+QVector MySQLManager::Query_Vector(const char * sql)
 {
 	QVector vec;
 	auto result = mysql_pool->executeSql_Vector(sql, std::ref(vec));
-	return std::move(vec);
+	return vec;
+}
+
+bool MySQLManager::Query(const char * sql)
+{
+	return mysql_pool->executeSql(sql);
+}
+
+bool MySQLManager::Query(const char * sql, string & result)
+{
+	return mysql_pool->executeSql(sql, result);
 }
 
 

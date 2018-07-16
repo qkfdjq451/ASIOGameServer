@@ -20,6 +20,17 @@ void GameManager::BeginPlay()
 void GameManager::Tick()
 {
 	Time::Get()->Update();
+	//static float tick = 0;
+	//static float time = 0;
+	//time += Time::Get()->Delta();
+	//++tick;
+	//if (time > 1)
+	//{
+	//	time = 0;
+	//	system("cls");
+	//	cout << "ÇÁ·¹ÀÓ : " << tick << endl;
+	//	tick = 0;
+	//}
 }
 
 void GameManager::EndPlay()

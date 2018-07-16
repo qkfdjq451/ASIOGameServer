@@ -8,11 +8,13 @@
 #include "../User/User.h"
 #include "../Monster/MonsterBuilder.h"
 #include "../Channel/Channel.h"
+
+#include "../Character/Character.h"
 #include "../Character/CharacterManager.h"
 
 //std::shared_ptr<flatbuffers::FlatBufferBuilder> CharacterManager::Make_FBB_All_CharacterInfo()
 //{
-//	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+//	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
 //	vector<flatbuffers::Offset<FB::Character>> vec;
 //	for (auto character : characters)
 //	{
@@ -45,6 +47,45 @@ void MonsterManager::Async_Function(std::shared_ptr<Func> func)
 	});
 }
 
+void MonsterManager::DamageProcess(shared_ptr<char[]> data, shared_ptr<class Character> character)
+{
+	auto damageTable = FB::GetDamageVec(data.get());
+	auto damageVecter = damageTable->damagevector();
+	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);	
+	vector<flatbuffers::Offset<FB::Damage>> damageVector;	
+
+	for (auto damage : *damageVecter)
+	{		
+		auto result = monsters.find(damage->damaged_code());
+		if (result == monsters.end()) continue;
+		auto monster = result->second.lock();
+		if (!monster) continue;	
+		bool retval = monster->CheckRange(character, damage->attackType());
+		if (retval == false)
+		{
+			cout << "사거리 XXXXXXX" << endl;
+			continue;
+		}
+		FB::DamageBuilder damageB = FB::DamageBuilder(*fbb);
+		retval = monster->GetDamage(character, damage->attackType(), &damageB);
+		if (retval)
+			damageVector.push_back(damageB.Finish());
+		else
+			damageB.Finish();
+		
+	}
+	if (damageVector.size() == 0) 
+		return;
+
+	auto offset = fbb->CreateVector(damageVector);
+	fbb->Finish(FB::CreateDamageVec(*fbb, offset));
+	auto channel = GetParentComponent<Channel>();
+	if (!channel) return;
+	auto cm = channel->GetComponent<CharacterManager>();
+	if (!cm) return;
+	cm->Async_SendAllCharacter(PS::CON_DAMAGE_VECTOR, fbb);
+}
+
 void MonsterManager::BeginPlay()
 {
 	
@@ -73,7 +114,7 @@ void MonsterManager::Tick()
 	if (saveTime > 0.4)
 	{
 		saveTime = 0;
-		auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+		auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
 		vector<flatbuffers::Offset<FB::Move>> moveVec;
 		for (auto monster : monsters)
 		{
@@ -103,7 +144,7 @@ void MonsterManager::EndPlay()
 
 std::shared_ptr<flatbuffers::FlatBufferBuilder> MonsterManager::Make_FBB_All_Monster()
 {
-	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
 	vector<flatbuffers::Offset<FB::Monster>> vec;
 	for (auto node : monsters)
 	{
@@ -126,6 +167,7 @@ std::shared_ptr<flatbuffers::FlatBufferBuilder> MonsterManager::Make_FBB_All_Mon
 	printf("FBB에 저장한 몬스터의 수 : %d", vec.size());
 	auto vecoffset = fbb->CreateVector(vec);
 	fbb->Finish(FB::CreateMonsterVec(*fbb, vecoffset));
+
 	return fbb;
 }
 
@@ -137,7 +179,10 @@ void MonsterManager::Add_Spawn_Monster(const MonsterSpawnDesc & desc)
 		if (monster)
 		{
 			monster->navi = desc.navi;
-			monster->GetRespawnRange().SetRange(desc.range);
+			monster->respawnPosition = desc.position;
+			monster->respawnRange = desc.respawnTime;
+
+			monster->respawnTime = desc.respawnTime;
 			monsters.insert(make_pair(monster->GetNumber(), monster));
 			Attach(monster);
 		}

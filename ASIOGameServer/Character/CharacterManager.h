@@ -14,12 +14,13 @@ public:
 	void Async_Function(std::shared_ptr<Func> func);
 
 	int GetCharacterCount();	
+
+	std::shared_ptr<flatbuffers::FlatBufferBuilder> Make_FBB_All_CharacterInfo();
 private:
 
 	bool InsertCharacter(std::shared_ptr<class Character> character);
 	bool EraseCharacter(int key);	
 	void SendAllCharacter(const PS & symbol, std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb);
-	std::shared_ptr<flatbuffers::FlatBufferBuilder> Make_FBB_All_CharacterInfo();
 	
 private:
 	bool Moving(std::shared_ptr<class Character> character);

@@ -1,5 +1,12 @@
 #pragma once
 
+struct Portal
+{
+	int destCode;
+	int gateNumber;
+	Vector3 position;
+};
+
 class MapInfo : public Component
 {
 public:
@@ -8,7 +15,6 @@ public:
 public:
 	MapInfo();
 	
-
 	void BeginPlay() override;
 	void PrevTick();
 	void Tick() override;
@@ -23,6 +29,9 @@ public:
 	MapType GetMapType() { return mapType; }
 	int GetMapCode() { return mapCode; }
 	std::shared_ptr<class Navigation> GetNavi() { return navi; }
+	Portal* GetPortal(int gateNumber);
+	std::string GetLevelName() { return LevelName; }
+
 private:
 	int mapCode;
 	std::string mapName;
@@ -32,4 +41,5 @@ private:
 
 	std::vector<struct MonsterSpawnDesc> spawnDescs;
 	std::vector<std::weak_ptr<class Channel>> channels;
+	std::map<int, Portal> portals;
 };

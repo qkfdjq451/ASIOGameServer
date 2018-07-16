@@ -14,16 +14,17 @@ MapInfo::MapInfo()
 
 void MapInfo::BeginPlay()
 {
+
+	//네비게이션 메쉬 임포트
 	ifstream ifs;
 	ifs.open(NaviDatas+"MapCode"+to_string(mapCode)+".navmesh", ios::in | ios::binary);
 	if (ifs.fail())
 	{
-		cout << "실패" << endl;
+		//cout << "실패" << endl;
 	}
 	else
 	{
 		navi = make_shared<Navigation>();
-		cout << "성공" << endl;
 		int size;
 		ifs.read((char*)&size, sizeof(int));
 		cout << size << endl;
@@ -36,45 +37,47 @@ void MapInfo::BeginPlay()
 	}
 	ifs.close();
 
+
+	//몬스터 불러오기
 	if (mapType == MapType::Dungeon)
 	{
-		string query = "select SpawnRange.minX, SpawnRange.maxX, "
-			"SpawnRange.minY, SpawnRange.maxY, MonsterSpawnInfo.MonsterCode ,"
-			"MonsterSpawnInfo.MonsterCount  from MonsterSpawnInfo natural join SpawnRange where MonsterSpawnInfo.MapCode = ";		
-		query += to_string(mapCode);
-		auto vec = MySQLManager::Get()->Query(query.c_str());
+		char query[128];
+		snprintf(query, 128,"Call GetSpawnInfo(%d)", mapCode);		
+		auto vec = MySQLManager::Get()->Query_Vector(query);
 		for (auto spawnInfo : vec)
 		{
 			MonsterSpawnDesc desc;
-			for (auto data : spawnInfo)
-			{
-				if (data.first == "minX")
-					desc.range.minX = stof(data.second);
-				else if (data.first == "maxX")
-					desc.range.maxX = stof(data.second);
-				else if (data.first == "minY")
-					desc.range.minY = stof(data.second);
-				else if (data.first == "maxY")
-					desc.range.maxY = stof(data.second);
-				else if (data.first == "MonsterCode")
-					desc.monsterCode = stoi(data.second);
-				else if (data.first == "MonsterCount")
-					desc.monsterCount = stoi(data.second);
-
-				if (navi)
-				{
-					desc.navi = navi;
-				}
-			}
+			desc.monsterCode = std::stoi(spawnInfo[2].second);
+			desc.monsterCount = std::stoi(spawnInfo[3].second);
+			desc.position = (Vector3(spawnInfo[4].second, spawnInfo[5].second, spawnInfo[6].second));
+			desc.distanceRange = std::stof(spawnInfo[7].second);
+			desc.respawnTime = std::stof(spawnInfo[8].second);
+			desc.navi = navi;
 			spawnDescs.push_back(desc);
 		}
 	}
 
-	for (int i = 1; i <= 1; i++)
+	
+	//채널 개설
+	for (int i = 1; i <= 3; i++)
 	{
 		auto channel = Component::CreateComponent<Channel>(mapCode,i);		
 		Attach(channel);
 		channels.push_back(channel);
+	}
+
+	//포탈정보 불러오기
+	char query[128];
+	snprintf(query, 128, "Call GetAllPortalInMap(%d)", mapCode);
+	auto vec = MySQLManager::Get()->Query_Vector(query);
+	for (auto portal : vec)
+	{
+		Portal pt;
+		pt.destCode = stoi(portal[2].second);
+		pt.gateNumber = stoi(portal[3].second);
+		pt.position = Vector3(portal[4].second, portal[5].second, portal[6].second);
+
+		portals.insert(make_pair(pt.gateNumber, pt));
 	}
 }
 
@@ -119,4 +122,14 @@ std::shared_ptr<class Channel> MapInfo::GetChannel(int index)
 	if (channels.size() < index || index < 0)
 		return nullptr;
 	return channels[index - 1].lock();
+}
+
+Portal* MapInfo::GetPortal(int gateNumber)
+{
+	auto result=portals.find(gateNumber);
+	if (result!= portals.end())
+	{
+		return &result->second;
+	}
+	return nullptr;
 }

@@ -37,6 +37,7 @@ bool DamageFormula::GetCurDamage(int code, FB::AttackState state, float level, f
 		break;
 	}
 	cur = formula * power;
+	return true;
 }
 
 bool DamageFormula::CheckRange(int attackerCode, FB::AttackState state, Vector3 from, Vector3 to)
@@ -67,60 +68,65 @@ bool DamageFormula::CheckRange(int attackerCode, FB::AttackState state, Vector3 
 	default:
 		return false;
 	}
-	if (Vector3::Distance(from, to) < range)
-		return false;
-	return true;
+	float distance = Vector3::Distance(from, to);
+	cout << "플레이어와의 거리 : " << distance << endl;
+	if (distance < range)
+		return true;
+	return false;
 }
 
 DamageFormula::DamageFormula()
 {
-	string query = "select * from DamageFormula";
-	MySQLManager::Get()->Async_Query(query.c_str(),
-		[this](QVector& vec, bool result)
 	{
-		//정상적으로 받았을 때
-		if (result)
+		string query = "select * from DamageFormula";
+		MySQLManager::Get()->Async_Query(query.c_str(),
+			[this](QVector& vec, bool result)
 		{
-			for (auto datas : vec)
+			//정상적으로 받았을 때
+			if (result)
 			{
-				Damage damage;
-				float* temp = (float*)&damage;
-				for (int i = 1; i < datas.size(); i++)
+				for (auto datas : vec)
 				{
-					temp[i-1]= stof(datas[i].second);
+					Damage damage;
+					float* temp = (float*)&damage;
+					for (int i = 1; i < datas.size(); i++)
+					{
+						temp[i - 1] = stof(datas[i].second);
+					}
+					damages.insert(make_pair(stoi(datas[0].second), damage));
 				}
-				damages.insert(make_pair(stoi(datas[0].second), damage));
 			}
-		}
-		else
-		{
-			//예외처리
-		}
-	});
-
-	string query = "select * from CharacterAttackRange";
-	MySQLManager::Get()->Async_Query(query.c_str(),
-		[this](QVector& vec, bool result)
+			else
+			{
+				//예외처리
+			}
+		});
+	}
 	{
-		//정상적으로 받았을 때
-		if (result)
+		string query = "select * from CharacterAttackRange";
+		MySQLManager::Get()->Async_Query(query.c_str(),
+			[this](QVector& vec, bool result)
 		{
-			for (auto datas : vec)
+			//정상적으로 받았을 때
+			if (result)
 			{
-				Range range;
-				float* temp = (float*)&range;
-				for (int i = 1; i <datas.size(); i++)
+				for (auto datas : vec)
 				{
-					temp[i - 1] = stof(datas[i].second);
+					Range range;
+					float* temp = (float*)&range;
+					for (int i = 1; i < datas.size(); i++)
+					{
+						temp[i - 1] = stof(datas[i].second);
+					}
+					ranges.insert(make_pair(stoi(datas[0].second), range));
 				}
-				ranges.insert(make_pair(stoi(datas[0].second), range));
 			}
-		}
-		else
-		{
-			//예외처리
-		}
-	});
+			else
+			{
+				//예외처리
+			}
+		});
+	}
 }
 DamageFormula::~DamageFormula()
 {

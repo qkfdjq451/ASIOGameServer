@@ -10,16 +10,19 @@
 #include "./Navi/Navigation.h"
 #include "./DamageFormula/DamageFormula.h"
 #include "./StatusManager/StatusManager.h"
+#include "./ItemManager/ItemManager.h"
 
 int main(int argc, char* argv[])
 {
 	MySQLManager::Create();
 	TimerManager::Create();
 	EventManager::Create();
+	ItemManager::Create();
 	DamageFormula::Create();
 	StatusManager::Create();
 	MonsterBuilder::Init();
 	Navigation::Init();
+	
 	auto gm = std::make_shared<GameManager>();
 	try 
 	{
@@ -41,6 +44,7 @@ int main(int argc, char* argv[])
 	}
 	StatusManager::Delete();
 	DamageFormula::Delete();
+	ItemManager::Delete();
 	EventManager::Delete();
 	TimerManager::Delete();
 	MySQLManager::Delete();

@@ -52,7 +52,7 @@ void TimerManager::Run()
 
 bool TimerManager::InsertLoop(int id, long milliseconds, shared_ptr<Func> func)
 {
-	Timer t;
+	STimer t;
 	t.start_clock = system_clock::now();
 	t.unit_milliseconds = milliseconds;
 	t.work = func;
@@ -62,7 +62,7 @@ bool TimerManager::InsertLoop(int id, long milliseconds, shared_ptr<Func> func)
 
 bool TimerManager::InsertTimer(int id, long milliseconds, shared_ptr<Func> func)
 {
-	Timer t;
+	STimer t;
 	t.start_clock = system_clock::now();
 	t.unit_milliseconds = milliseconds;
 	t.work = func;

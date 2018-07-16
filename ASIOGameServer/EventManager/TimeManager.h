@@ -1,6 +1,6 @@
 #pragma once
 
-struct Timer
+struct STimer
 {
 	std::chrono::system_clock::time_point start_clock;
 	long unit_milliseconds;
@@ -23,8 +23,8 @@ private:
 	~TimerManager();
 
 
-	std::map<int, Timer> m_LoopList;
-	std::map<int, Timer> m_TimerList;
+	std::map<int, STimer> m_LoopList;
+	std::map<int, STimer> m_TimerList;
 	static TimerManager * inst;
 public:
 	static bool Create();

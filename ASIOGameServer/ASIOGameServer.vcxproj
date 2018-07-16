@@ -35,6 +35,8 @@
     <ClCompile Include="EventManager\EventManager.cpp" />
     <ClCompile Include="EventManager\TimeManager.cpp" />
     <ClCompile Include="GameManager\GameManager.cpp" />
+    <ClCompile Include="ItemManager\Inventory.cpp" />
+    <ClCompile Include="ItemManager\ItemManager.cpp" />
     <ClCompile Include="Log\LogManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map\MapInfo.cpp" />
@@ -60,6 +62,7 @@
     <ClCompile Include="System\Time.cpp" />
     <ClCompile Include="User\User.cpp" />
     <ClCompile Include="User\UserManager.cpp" />
+    <ClCompile Include="Utility\ConvertUTF8.cpp" />
     <ClCompile Include="WorkerGroup\WorkerGroup.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -80,13 +83,10 @@
     <ClInclude Include="EventManager\React.h" />
     <ClInclude Include="EventManager\TimeManager.h" />
     <ClInclude Include="Flag.h" />
-    <ClInclude Include="FlatBuffer\FB_Character_generated.h" />
-    <ClInclude Include="FlatBuffer\FB_chat_generated.h" />
-    <ClInclude Include="FlatBuffer\FB_generated.h" />
-    <ClInclude Include="FlatBuffer\FB_Map_generated.h" />
-    <ClInclude Include="FlatBuffer\FB_User_generated.h" />
     <ClInclude Include="GameManager\GameManager.h" />
     <ClInclude Include="Global.h" />
+    <ClInclude Include="ItemManager\Inventory.h" />
+    <ClInclude Include="ItemManager\ItemManager.h" />
     <ClInclude Include="Log\LogManager.h" />
     <ClInclude Include="Map\MapInfo.h" />
     <ClInclude Include="Map\MapManager.h" />
@@ -114,6 +114,7 @@
     <ClInclude Include="System\Time.h" />
     <ClInclude Include="User\User.h" />
     <ClInclude Include="User\UserManager.h" />
+    <ClInclude Include="Utility\ConvertUTF8.h" />
     <ClInclude Include="WorkerGroup\WorkerGroup.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

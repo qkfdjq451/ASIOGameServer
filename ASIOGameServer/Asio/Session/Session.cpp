@@ -46,7 +46,7 @@ void Session::do_read()
 		socket_.async_read_some(asio::buffer(recv_buffer.buffer+ com_recvSize, BUFSIZE)
 			, [this, self](std::error_code ec, std::size_t length)
 		{
-			printf(" read 받은 크기 : %zd\n" , length);
+			//printf(" read 받은 크기 : %zd\n" , length);
 			//소켓 종료 요청
 			if (length == 0)
 			{
@@ -71,7 +71,7 @@ void Session::do_read()
 				printf("조금 받음\n");
 				break;
 			case EResult::COMPLETE:
-				printf("정상적으로 받음\n");
+				//printf("정상적으로 받음\n");
 				//recv_buffer.packet.symbol
 				currentState->On_Read(recv_buffer.packet.symbol,&recv_buffer.packet.buffer, recv_buffer.packet.size);
 				com_recvSize = 0;
@@ -98,7 +98,7 @@ void Session::do_write()
 
 	strand_.post([this, self]()
 	{	
-		std::shared_ptr<SendBuffer> temp;
+		std::shared_ptr<SendBuffer> temp= nullptr;
 
 		if (current_send_buffer == nullptr)
 		{
@@ -108,27 +108,28 @@ void Session::do_write()
 			}
 			else
 			{
-				current_send_buffer = send_buffers.front();	
+				current_send_buffer = send_buffers.front();
+				send_buffers.pop();
 				temp = current_send_buffer;
 			}
 		}
-		
+		if (!temp) return;
 		socket_.async_write_some(asio::buffer(
-			&current_send_buffer->buffer.start_pointer + com_sendSize,
-			current_send_buffer->buffer.packet.size - com_sendSize)
+			&temp->buffer.start_pointer + com_sendSize,
+			temp->buffer.packet.size - com_sendSize)
 		,[this, self, temp](std::error_code ec, std::size_t length)
 		{
 			EResult retval;
-			if (current_send_buffer)
+			if (temp)
 			{
-				retval = SendResult(current_send_buffer, length);
+				retval = SendResult(temp, length);
 			}
 			else
 			{
 				retval = EResult::None;
 			}
 
-			printf(" send 크기 : %zd\n", length);
+			//printf(" send 크기 : %zd\n", length);
 			
 			if (length == 0)
 			{
@@ -138,13 +139,13 @@ void Session::do_write()
 			switch (retval)
 			{
 			case EResult::LOW:
+				cout << "조금 보냄" << endl;
 				do_write();
 				break;
 			case EResult::COMPLETE:				
 				com_sendSize = 0;				
 				current_send_buffer = nullptr;
-
-				send_buffers.pop();
+				//send_buffers.pop();
 				do_write();
 				break;
 
@@ -159,6 +160,7 @@ void Session::do_write()
 		});
 	});
 }
+
 
 EResult Session::RecvResult( std::size_t length)
 {
@@ -217,10 +219,8 @@ void Session::PushSend(std::shared_ptr<struct SendBuffer> sb)
 	{
 		if (sb == nullptr)
 		{
-			std::cout << "널 피티알!!" << std::endl;
 			return;
 		}			
-		std::cout << "널아님!!" << std::endl;
 		send_buffers.push(sb);
 		do_write();
 	});

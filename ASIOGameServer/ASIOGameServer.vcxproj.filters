@@ -4,35 +4,8 @@
     <Filter Include="Component">
       <UniqueIdentifier>{c64342d5-35e1-4d15-9071-bdc62bee3ad4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="User">
-      <UniqueIdentifier>{a8cac0d1-6621-4350-93fc-04a2eb223c9e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="System">
       <UniqueIdentifier>{b500b5d7-699b-48fd-9f82-80bea0d00397}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ManagementClass">
-      <UniqueIdentifier>{c7544a25-81bd-4667-8da7-e32daa7d030d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ManagementClass\LogManager">
-      <UniqueIdentifier>{70953cbb-2e78-45f9-bb40-66159c61ce5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ManagementClass\CipherManager">
-      <UniqueIdentifier>{b5ac0b73-8d2c-4203-926e-661ee37113d5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ManagementClass\DB">
-      <UniqueIdentifier>{de9d435b-5d68-48f8-9b6a-9456342647e7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ManagementClass\DB\Mysql">
-      <UniqueIdentifier>{488ce801-f7d4-4b90-b153-38b73fbfb33d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ManagementClass\DB\MongoDB">
-      <UniqueIdentifier>{c08240c3-891b-41ad-9f6e-2fd2ed55af28}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ManagementClass\EventManager">
-      <UniqueIdentifier>{8687144f-f74e-4fec-b362-7b107f253e44}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ManagementClass\FlatBuffer">
-      <UniqueIdentifier>{346b044e-7353-42a2-953d-a23f432c306c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Asio">
       <UniqueIdentifier>{19116acc-79d1-4ace-9cf9-221079fd4689}</UniqueIdentifier>
@@ -43,9 +16,6 @@
     <Filter Include="Asio\Session\SessionState">
       <UniqueIdentifier>{a5842f08-1307-411a-99f0-805e773c9f81}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Character">
-      <UniqueIdentifier>{7f637470-0bbf-472c-95b4-e5a2112317b0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Component\GameManager">
       <UniqueIdentifier>{0bf2a45e-3453-4d5f-87f3-08110b72f66d}</UniqueIdentifier>
     </Filter>
@@ -55,23 +25,59 @@
     <Filter Include="Component\Channel">
       <UniqueIdentifier>{d6f4b89c-7010-49a5-90cf-cb0e308d5921}</UniqueIdentifier>
     </Filter>
-    <Filter Include="WorkerGroup">
-      <UniqueIdentifier>{267295ad-c72f-4a71-baba-2fd34a3306ea}</UniqueIdentifier>
+    <Filter Include="SingletonManagerClass">
+      <UniqueIdentifier>{33f18ce2-d7d4-4fff-be73-ac3b6bc02b48}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Monster">
-      <UniqueIdentifier>{98d2c7ce-5216-48cd-8764-39f8ece750a7}</UniqueIdentifier>
+    <Filter Include="SingletonManagerClass\StatusManager">
+      <UniqueIdentifier>{e0bbba24-15d4-4309-b095-25d582e8c006}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Navi">
-      <UniqueIdentifier>{b5225e85-0b03-4552-81d9-64755dd3a466}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="BehaviorTree">
-      <UniqueIdentifier>{09d79d9e-8db7-419f-9477-dcc286a8f4b0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="DamageFormula">
+    <Filter Include="SingletonManagerClass\DamageFormula">
       <UniqueIdentifier>{913eb993-793f-4430-b9bf-a9df574cb712}</UniqueIdentifier>
     </Filter>
-    <Filter Include="StatusManager">
-      <UniqueIdentifier>{e0bbba24-15d4-4309-b095-25d582e8c006}</UniqueIdentifier>
+    <Filter Include="SingletonManagerClass\DB">
+      <UniqueIdentifier>{de9d435b-5d68-48f8-9b6a-9456342647e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SingletonManagerClass\DB\MongoDB">
+      <UniqueIdentifier>{c08240c3-891b-41ad-9f6e-2fd2ed55af28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SingletonManagerClass\DB\Mysql">
+      <UniqueIdentifier>{488ce801-f7d4-4b90-b153-38b73fbfb33d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SingletonManagerClass\LogManager">
+      <UniqueIdentifier>{70953cbb-2e78-45f9-bb40-66159c61ce5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SingletonManagerClass\EventManager">
+      <UniqueIdentifier>{8687144f-f74e-4fec-b362-7b107f253e44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SingletonManagerClass\CipherManager">
+      <UniqueIdentifier>{b5ac0b73-8d2c-4203-926e-661ee37113d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Character">
+      <UniqueIdentifier>{7f637470-0bbf-472c-95b4-e5a2112317b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI">
+      <UniqueIdentifier>{fbe4e9bf-ce67-432b-8b2a-44b5460abf14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\Navi">
+      <UniqueIdentifier>{b5225e85-0b03-4552-81d9-64755dd3a466}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\BehaviorTree">
+      <UniqueIdentifier>{09d79d9e-8db7-419f-9477-dcc286a8f4b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Monster">
+      <UniqueIdentifier>{98d2c7ce-5216-48cd-8764-39f8ece750a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Asio\User">
+      <UniqueIdentifier>{a8cac0d1-6621-4350-93fc-04a2eb223c9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Asio\WorkerGroup">
+      <UniqueIdentifier>{267295ad-c72f-4a71-baba-2fd34a3306ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SingletonManagerClass\ItemManager">
+      <UniqueIdentifier>{d537968f-c0b3-4d7a-8cc1-43f220edb13b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{3ce0f2c2-b72e-422d-953c-23251915e118}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -91,41 +97,41 @@
       <Filter>Asio\Session\SessionState</Filter>
     </ClCompile>
     <ClCompile Include="Cipher\CipherManager.cpp">
-      <Filter>ManagementClass\CipherManager</Filter>
+      <Filter>SingletonManagerClass\CipherManager</Filter>
     </ClCompile>
     <ClCompile Include="Component\Component.cpp">
       <Filter>Component</Filter>
     </ClCompile>
     <ClCompile Include="Mysql\MysqlPool.cpp">
-      <Filter>ManagementClass\DB\Mysql</Filter>
+      <Filter>SingletonManagerClass\DB\Mysql</Filter>
     </ClCompile>
     <ClCompile Include="EventManager\EventManager.cpp">
-      <Filter>ManagementClass\EventManager</Filter>
+      <Filter>SingletonManagerClass\EventManager</Filter>
     </ClCompile>
     <ClCompile Include="EventManager\TimeManager.cpp">
-      <Filter>ManagementClass\EventManager</Filter>
+      <Filter>SingletonManagerClass\EventManager</Filter>
     </ClCompile>
     <ClCompile Include="Log\LogManager.cpp">
-      <Filter>ManagementClass\LogManager</Filter>
+      <Filter>SingletonManagerClass\LogManager</Filter>
     </ClCompile>
     <ClCompile Include="User\User.cpp">
-      <Filter>User</Filter>
+      <Filter>Asio\User</Filter>
     </ClCompile>
     <ClCompile Include="User\UserManager.cpp">
-      <Filter>User</Filter>
+      <Filter>Asio\User</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MongoDB\MongoDB.cpp">
-      <Filter>ManagementClass\DB\MongoDB</Filter>
+      <Filter>SingletonManagerClass\DB\MongoDB</Filter>
     </ClCompile>
     <ClCompile Include="Map\MapInfo.cpp">
       <Filter>Component\Map</Filter>
     </ClCompile>
     <ClCompile Include="Mysql\MysqlManager.cpp">
-      <Filter>ManagementClass\DB\Mysql</Filter>
+      <Filter>SingletonManagerClass\DB\Mysql</Filter>
     </ClCompile>
     <ClCompile Include="WorkerGroup\WorkerGroup.cpp">
-      <Filter>WorkerGroup</Filter>
+      <Filter>Asio\WorkerGroup</Filter>
     </ClCompile>
     <ClCompile Include="System\Time.cpp">
       <Filter>System</Filter>
@@ -134,10 +140,10 @@
       <Filter>Component\GameManager</Filter>
     </ClCompile>
     <ClCompile Include="Character\Character.cpp">
-      <Filter>Character</Filter>
+      <Filter>Component\Character</Filter>
     </ClCompile>
     <ClCompile Include="Character\CharacterManager.cpp">
-      <Filter>Character</Filter>
+      <Filter>Component\Character</Filter>
     </ClCompile>
     <ClCompile Include="Map\MapManager.cpp">
       <Filter>Component\Map</Filter>
@@ -149,25 +155,34 @@
       <Filter>Asio\Session\SessionState</Filter>
     </ClCompile>
     <ClCompile Include="Monster\Monster.cpp">
-      <Filter>Monster</Filter>
+      <Filter>Component\Monster</Filter>
     </ClCompile>
     <ClCompile Include="Monster\MonsterManager.cpp">
-      <Filter>Monster</Filter>
+      <Filter>Component\Monster</Filter>
     </ClCompile>
     <ClCompile Include="Monster\MonsterBuilder.cpp">
-      <Filter>Monster</Filter>
+      <Filter>Component\Monster</Filter>
     </ClCompile>
     <ClCompile Include="Navi\Navigation.cpp">
-      <Filter>Navi</Filter>
+      <Filter>AI\Navi</Filter>
     </ClCompile>
     <ClCompile Include="BehaviorTree\BehaviorTree.cpp">
-      <Filter>BehaviorTree</Filter>
+      <Filter>AI\BehaviorTree</Filter>
     </ClCompile>
     <ClCompile Include="DamageFormula\DamageFormula.cpp">
-      <Filter>DamageFormula</Filter>
+      <Filter>SingletonManagerClass\DamageFormula</Filter>
     </ClCompile>
     <ClCompile Include="StatusManager\StatusManager.cpp">
-      <Filter>StatusManager</Filter>
+      <Filter>SingletonManagerClass\StatusManager</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemManager\ItemManager.cpp">
+      <Filter>SingletonManagerClass\ItemManager</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemManager\Inventory.cpp">
+      <Filter>SingletonManagerClass\ItemManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\ConvertUTF8.cpp">
+      <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -187,47 +202,47 @@
       <Filter>Asio\Session\SessionState</Filter>
     </ClInclude>
     <ClInclude Include="Cipher\CipherManager.h">
-      <Filter>ManagementClass\CipherManager</Filter>
+      <Filter>SingletonManagerClass\CipherManager</Filter>
     </ClInclude>
     <ClInclude Include="Component\Component.h">
       <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="Mysql\MysqlPool.h">
-      <Filter>ManagementClass\DB\Mysql</Filter>
+      <Filter>SingletonManagerClass\DB\Mysql</Filter>
     </ClInclude>
     <ClInclude Include="EventManager\EventManager.h">
-      <Filter>ManagementClass\EventManager</Filter>
+      <Filter>SingletonManagerClass\EventManager</Filter>
     </ClInclude>
     <ClInclude Include="EventManager\React.h">
-      <Filter>ManagementClass\EventManager</Filter>
+      <Filter>SingletonManagerClass\EventManager</Filter>
     </ClInclude>
     <ClInclude Include="EventManager\TimeManager.h">
-      <Filter>ManagementClass\EventManager</Filter>
+      <Filter>SingletonManagerClass\EventManager</Filter>
     </ClInclude>
     <ClInclude Include="Log\LogManager.h">
-      <Filter>ManagementClass\LogManager</Filter>
+      <Filter>SingletonManagerClass\LogManager</Filter>
     </ClInclude>
     <ClInclude Include="User\User.h">
-      <Filter>User</Filter>
+      <Filter>Asio\User</Filter>
     </ClInclude>
     <ClInclude Include="User\UserManager.h">
-      <Filter>User</Filter>
+      <Filter>Asio\User</Filter>
     </ClInclude>
     <ClInclude Include="Flag.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="MongoDB\MongoDB.h">
-      <Filter>ManagementClass\DB\MongoDB</Filter>
+      <Filter>SingletonManagerClass\DB\MongoDB</Filter>
     </ClInclude>
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Map\MapInfo.h">
       <Filter>Component\Map</Filter>
     </ClInclude>
     <ClInclude Include="Mysql\MysqlManager.h">
-      <Filter>ManagementClass\DB\Mysql</Filter>
+      <Filter>SingletonManagerClass\DB\Mysql</Filter>
     </ClInclude>
     <ClInclude Include="WorkerGroup\WorkerGroup.h">
-      <Filter>WorkerGroup</Filter>
+      <Filter>Asio\WorkerGroup</Filter>
     </ClInclude>
     <ClInclude Include="System\Time.h">
       <Filter>System</Filter>
@@ -236,10 +251,10 @@
       <Filter>Component\GameManager</Filter>
     </ClInclude>
     <ClInclude Include="Character\Character.h">
-      <Filter>Character</Filter>
+      <Filter>Component\Character</Filter>
     </ClInclude>
     <ClInclude Include="Character\CharacterManager.h">
-      <Filter>Character</Filter>
+      <Filter>Component\Character</Filter>
     </ClInclude>
     <ClInclude Include="Map\MapManager.h">
       <Filter>Component\Map</Filter>
@@ -250,42 +265,36 @@
     <ClInclude Include="Asio\Session\SessionState\LoginState.h">
       <Filter>Asio\Session\SessionState</Filter>
     </ClInclude>
-    <ClInclude Include="FlatBuffer\FB_chat_generated.h">
-      <Filter>ManagementClass\FlatBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="FlatBuffer\FB_generated.h">
-      <Filter>ManagementClass\FlatBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="FlatBuffer\FB_Character_generated.h">
-      <Filter>ManagementClass\FlatBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="FlatBuffer\FB_User_generated.h">
-      <Filter>ManagementClass\FlatBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="FlatBuffer\FB_Map_generated.h">
-      <Filter>ManagementClass\FlatBuffer</Filter>
-    </ClInclude>
     <ClInclude Include="Math.h" />
     <ClInclude Include="Monster\Monster.h">
-      <Filter>Monster</Filter>
+      <Filter>Component\Monster</Filter>
     </ClInclude>
     <ClInclude Include="Monster\MonsterManager.h">
-      <Filter>Monster</Filter>
+      <Filter>Component\Monster</Filter>
     </ClInclude>
     <ClInclude Include="Monster\MonsterBuilder.h">
-      <Filter>Monster</Filter>
+      <Filter>Component\Monster</Filter>
     </ClInclude>
     <ClInclude Include="Navi\Navigation.h">
-      <Filter>Navi</Filter>
+      <Filter>AI\Navi</Filter>
     </ClInclude>
     <ClInclude Include="BehaviorTree\BehaviorTree.h">
-      <Filter>BehaviorTree</Filter>
+      <Filter>AI\BehaviorTree</Filter>
     </ClInclude>
     <ClInclude Include="DamageFormula\DamageFormula.h">
-      <Filter>DamageFormula</Filter>
+      <Filter>SingletonManagerClass\DamageFormula</Filter>
     </ClInclude>
     <ClInclude Include="StatusManager\StatusManager.h">
-      <Filter>StatusManager</Filter>
+      <Filter>SingletonManagerClass\StatusManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemManager\ItemManager.h">
+      <Filter>SingletonManagerClass\ItemManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemManager\Inventory.h">
+      <Filter>SingletonManagerClass\ItemManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\ConvertUTF8.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

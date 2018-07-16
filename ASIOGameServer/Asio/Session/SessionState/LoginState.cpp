@@ -30,25 +30,31 @@ void LoginState::On_Read(const PS & symbol, void * recv_data, unsigned short siz
 						if (user)
 						{
 							//Character 객체 만들기
-							auto character = std::make_shared<Character>(user, charcode);							
+							auto character = std::make_shared<Character>(user, charcode++);							
 							
-							character->SetTypeCode(stoi(vec[0][2].second));
+							character->SetTypeCode((FB::CharacterType)stoi(vec[0][2].second));
+
+							auto type = character->GetTypeCode();
 							character->SetName(vec[0][3].second);
 							character->SetLevel(stoi(vec[0][4].second));
-														
+
+							cout << character->GetName() << endl;
+
 							StatusManager::Get()->SetStatus(character);							
 							character->SetMapKey(stoi(vec[0][5].second));
 							auto position = Vector3(vec[0][6].second, vec[0][7].second, vec[0][8].second);																					
-							character->SetPosition(position);							
+							character->SetWarpLocateDestination(position);
+							character->SetPosition(position);
 							user->SetCharacer(character);
 							character->Init();
 
-							//유저에게 보내주기						
+							
+							//유저에게 보내주기
 							auto fbb = make_shared< flatbuffers::FlatBufferBuilder >();
 							auto nick = fbb->CreateString(character->GetName());
 							auto charB = FB::CharacterBuilder(*fbb);
 
-							charB.add_code(charcode++);
+							charB.add_code(character->GetCode());
 							charB.add_type((FB::CharacterType)character->GetTypeCode());
 							charB.add_nick(nick);
 							charB.add_position(&character->GetPosition().ToFBVector3());

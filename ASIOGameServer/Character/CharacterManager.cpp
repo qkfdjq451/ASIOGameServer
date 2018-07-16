@@ -64,8 +64,8 @@ bool CharacterManager::InsertCharacter(std::shared_ptr<class Character> characte
 }
 
 void CharacterManager::SendAllCharacter(const PS & symbol, std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb)
-{
-	auto sb = std::make_shared<SendBuffer>(symbol, move(fbb));
+{	
+	auto sb = std::make_shared<SendBuffer>(symbol, fbb);
 	for (auto iter = characters.begin(); iter!= characters.end();++iter)
 	{
 		auto ch = iter->second.lock();
@@ -90,7 +90,7 @@ void CharacterManager::SendAllCharacter(const PS & symbol, std::shared_ptr<flatb
 
 std::shared_ptr<flatbuffers::FlatBufferBuilder> CharacterManager::Make_FBB_All_CharacterInfo()
 {
-	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
 	vector<flatbuffers::Offset<FB::Character>> vec;
 	for (auto character : characters)
 	{
@@ -100,7 +100,8 @@ std::shared_ptr<flatbuffers::FlatBufferBuilder> CharacterManager::Make_FBB_All_C
 			auto nick = fbb->CreateString(ch->GetName());
 			auto charB = FB::CharacterBuilder(*fbb);
 			charB.add_code(ch->GetCode());
-			charB.add_hp(ch->GetHP());
+			charB.add_type(ch->GetTypeCode());
+			charB.add_hp(ch->GetMaxHP());
 			charB.add_level(ch->GetLevel());
 			charB.add_nick(nick);
 			charB.add_power(ch->GetPower());
@@ -122,7 +123,6 @@ bool CharacterManager::EraseCharacter(int key)
 		auto character = result->second.lock();
 		if (character)
 		{
-			character->navi.reset();
 			character->cm.reset();
 		}
 		characters.erase(key);
@@ -156,14 +156,30 @@ void CharacterManager::PrevTick()
 	std::vector<std::shared_ptr<Func>>  copy_func_list;
 	{
 		std::lock_guard<std::mutex> lock(mt);
-		copy_erase_list.assign(req_erase_list.begin(), req_erase_list.end());
-		copy_Insert_list.assign(req_Insert_list.begin(), req_Insert_list.end());
-		copy_send_all.assign(req_send_all.begin(), req_send_all.end());
-		copy_func_list.assign(req_func_list.begin(), req_func_list.end());
-		req_erase_list.clear();
-		req_Insert_list.clear();
-		req_send_all.clear();
-		req_func_list.clear();
+		if (req_erase_list.empty()==false)
+		{
+			copy_erase_list.assign(req_erase_list.begin(), req_erase_list.end());
+			req_erase_list.clear();
+		}
+		
+		if (req_send_all.empty() == false)
+		{
+			copy_send_all.assign(req_send_all.begin(), req_send_all.end());
+			req_send_all.clear();
+		}
+		
+		if (req_Insert_list.empty() == false)
+		{
+			copy_Insert_list.assign(req_Insert_list.begin(), req_Insert_list.end());
+			req_Insert_list.clear();
+
+		}
+		
+		if (req_func_list.empty() == false)
+		{
+			copy_func_list.assign(req_func_list.begin(), req_func_list.end());
+			req_func_list.clear();
+		}		
 	}
 
 	for (auto erase : copy_erase_list)
@@ -193,7 +209,6 @@ void CharacterManager::PrevTick()
 }
 
 void CharacterManager::Tick()
-
 {
 	PrevTick();
 	if (bMovable)
@@ -208,7 +223,7 @@ void CharacterManager::Tick()
 		if (saveTime > 0.4)
 		{
 			saveTime = 0;
-			auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+			auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
 			vector<flatbuffers::Offset<FB::Move>> moveVec;
 			for (auto character : characters)
 			{
@@ -237,20 +252,20 @@ void CharacterManager::EndPlay()
 
 std::pair<int, float> CharacterManager::SearchNearPlayer(Vector3 vec)
 {
-	float max = MIN_flt;
+	float min = MAX_flt;
 	int code = -1;
 	for (auto character : characters)
 	{
 		auto ch = character.second.lock();
 		if (!ch) continue;
 		float distance = Vector3::Distance(ch->GetPosition(), vec);
-		if (distance > max)
+		if (distance < min)
 		{
-			max = distance;
+			min = distance;
 			code = ch->GetCode();
 		}
 	}
-	return make_pair(code, max);
+	return make_pair(code, min);
 }
 
 std::shared_ptr<class Character> CharacterManager::GetCharacter(int key)

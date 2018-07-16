@@ -6,7 +6,7 @@
 void MapManager::BeginPlay()
 {
 	const char* query = "SELECT * FROM MapInfo;";
-	auto vec = MySQLManager::Get()->Query(query);
+	auto vec = MySQLManager::Get()->Query_Vector(query);
 	for (auto map : vec)
 	{
 		auto info = Component::CreateComponent<MapInfo>();

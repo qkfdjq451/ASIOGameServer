@@ -18,7 +18,7 @@ bool StatusManager::SetStatus(std::shared_ptr<class Character> character)
 
 StatusManager::StatusManager()
 {
-	string query = "select * from DamageFormula";
+	string query = "select * from CharacterTypeInfo";
 	MySQLManager::Get()->Async_Query(query.c_str(),
 		[this](QVector& vec, bool result)
 	{
@@ -38,6 +38,7 @@ StatusManager::StatusManager()
 		}
 		else
 		{
+			int a = 0;
 			//예외처리
 		}
 	});

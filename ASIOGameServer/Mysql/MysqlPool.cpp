@@ -32,6 +32,8 @@ MYSQL* MysqlPool::createOneConnect() {
 	MYSQL* conn = nullptr;
 	conn = mysql_init(conn);
 	if (conn != nullptr) {
+		mysql_options(conn, MYSQL_SET_CHARSET_NAME, "utf8");
+		mysql_options(conn, MYSQL_INIT_COMMAND, "SET NAMES utf8");
 		if (mysql_real_connect(
 			conn,
 			_mysqlhost,
@@ -42,10 +44,10 @@ MYSQL* MysqlPool::createOneConnect() {
 			_socket,
 			_client_flag)) {
 			connect_count++;
-			//한글 사용을 위해 사용
-			mysql_query(conn, "set session character_set_connection=euckr;");
-			mysql_query(conn, "set session character_set_results=euckr;");
-			mysql_query(conn, "set session character_set_client=euckr;");
+			//c++ 기본 케릭터 set은 euckr이니 euckr로  설정
+			//mysql_query(conn, "set session character_set_connection=euckr;");
+			//mysql_query(conn, "set session character_set_results=euckr;");
+			//mysql_query(conn, "set session character_set_client=euckr;");
 			return conn;
 		}
 		else {
@@ -215,18 +217,16 @@ bool MysqlPool::executeSql_Vector(const char * sql, QVector& result)
 	{
 		if (mysql_query(conn, sql) == 0)
 		{
-
 			MYSQL_RES *res = mysql_store_result(conn);
-
 			MYSQL_FIELD *field;
-			std::vector<std::pair<std::string, std::string>> base;
-			while ((field = mysql_fetch_field(res)))
-			{
-				base.push_back(std::make_pair(std::string(field->name),std::string("df")));
-			}
-
+			std::vector<std::pair<std::string, std::string>> base;			
 			if (res)
 			{
+				while ((field = mysql_fetch_field(res)))
+				{
+					base.push_back(std::make_pair(std::string(field->name), std::string("df")));
+				}
+
 				MYSQL_ROW row;
 				int fieldCount = mysql_num_fields(res);
 				while ((row = mysql_fetch_row(res)))
@@ -256,18 +256,42 @@ bool MysqlPool::executeSql_Vector(const char * sql, QVector& result)
 	return true;
 }
 
-void MysqlPool::executeSql(const char * sql)
+bool MysqlPool::executeSql(const char * sql)
+{
+	MYSQL* conn = getOneConnect();
+	if (conn)
+	{		
+		if (mysql_query(conn, sql) == 0)
+		{
+			close(conn);
+			return true;
+		}		
+	}	
+	std::cerr << mysql_error(conn) << std::endl;
+	close(conn);
+	return false;	
+}
+
+bool MysqlPool::executeSql(const char * sql, string & result)
 {
 	MYSQL* conn = getOneConnect();
 	if (conn)
 	{
-		executeSql_Vector(sql);
+		if (mysql_query(conn, sql) == 0)
+		{
+			MYSQL_RES *res = mysql_store_result(conn);
+			if (res)
+			{
+				MYSQL_ROW row = mysql_fetch_row(res);
+				result = row[0];
+			}
+			close(conn);
+			return true;
+		}
 	}
-	else
-	{
-		std::cerr << mysql_error(conn) << std::endl;
-	}
+	std::cerr << mysql_error(conn) << std::endl;
 	close(conn);
+	return false;
 }
 
 MysqlPool::~MysqlPool() 

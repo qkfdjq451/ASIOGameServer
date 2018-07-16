@@ -16,7 +16,8 @@ struct Attack FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_CODE = 4,
     VT_STATE = 6,
-    VT_YAW = 8
+    VT_YAW = 8,
+    VT_TARGETCODE = 10
   };
   int32_t code() const {
     return GetField<int32_t>(VT_CODE, 0);
@@ -27,11 +28,15 @@ struct Attack FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   float yaw() const {
     return GetField<float>(VT_YAW, 0.0f);
   }
+  int32_t targetCode() const {
+    return GetField<int32_t>(VT_TARGETCODE, 0);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_CODE) &&
            VerifyField<int8_t>(verifier, VT_STATE) &&
            VerifyField<float>(verifier, VT_YAW) &&
+           VerifyField<int32_t>(verifier, VT_TARGETCODE) &&
            verifier.EndTable();
   }
 };
@@ -47,6 +52,9 @@ struct AttackBuilder {
   }
   void add_yaw(float yaw) {
     fbb_.AddElement<float>(Attack::VT_YAW, yaw, 0.0f);
+  }
+  void add_targetCode(int32_t targetCode) {
+    fbb_.AddElement<int32_t>(Attack::VT_TARGETCODE, targetCode, 0);
   }
   explicit AttackBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -64,8 +72,10 @@ inline flatbuffers::Offset<Attack> CreateAttack(
     flatbuffers::FlatBufferBuilder &_fbb,
     int32_t code = 0,
     AttackState state = AttackState_Combo1,
-    float yaw = 0.0f) {
+    float yaw = 0.0f,
+    int32_t targetCode = 0) {
   AttackBuilder builder_(_fbb);
+  builder_.add_targetCode(targetCode);
   builder_.add_yaw(yaw);
   builder_.add_code(code);
   builder_.add_state(state);

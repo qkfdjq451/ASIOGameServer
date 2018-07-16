@@ -9,7 +9,7 @@ protected:
 	void On_Read(const PS& symbol, void* recv_data, unsigned short size);
 
 	std::shared_ptr<class Channel> GetChannel(std::shared_ptr<class Character> character);
-	void ResDamageVector(void* recv_data);
+
 
 };
 

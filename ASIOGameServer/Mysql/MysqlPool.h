@@ -15,7 +15,8 @@ public:
 	QVector executeSql_Vector(const char* sql);
 
 	bool executeSql_Vector(const char* sql, QVector& result);
-	void executeSql(const char* sql);
+	bool executeSql(const char* sql);
+	bool executeSql(const char* sql,string& result);
 
 	void setParameter(const char*   _mysqlhost,
 		const char*   _mysqluser,

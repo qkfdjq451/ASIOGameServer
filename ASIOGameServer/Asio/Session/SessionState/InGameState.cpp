@@ -10,6 +10,7 @@
 #include "../../../Channel/Channel.h"
 
 #include"../../../DamageFormula/DamageFormula.h"
+#include "../../../Monster/MonsterManager.h"
 
 void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size)
 {
@@ -27,11 +28,11 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 				auto cm = character->GetCharacterManager().lock();
 				if (!cm) return;
 
-				auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
-				auto charb = FB::ChatBuilder(*fbb);
+				auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
 				auto chat = FB::GetChat(recv_data);
 				auto nick = fbb->CreateString(character->GetName());
 				auto message = fbb->CreateString(chat->message());
+				auto charb = FB::ChatBuilder(*fbb);
 				charb.add_nick(nick);
 				charb.add_message(message);
 				fbb->Finish(charb.Finish());
@@ -63,6 +64,59 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 		}
 	}	
 		break;
+	case PS::REQ_CHARACTER_LIST:
+	{
+		auto ss = session.lock();
+		auto user = ss->GetUser().lock();
+		if (ss != nullptr&&user != nullptr&&user->GetCharacter() != nullptr)
+		{
+			auto cm = user->GetCharacter()->GetCharacterManager().lock();
+			if (!cm) return;
+			auto func = std::make_shared<Function<void>>([ss,cm] 
+			{
+				auto fbb = cm->Make_FBB_All_CharacterInfo();
+				ss->PushSend(PS::ENTER_NEW_CHARACTER_VECTOR, move(fbb));
+			});
+			cm->Async_Function(func);
+		}
+		break;
+	}
+	//case PS::REQ_MONSTER_LIST:
+	//{
+	//	auto ss = session.lock();
+	//	auto user = ss->GetUser().lock();
+	//	if (ss != nullptr&&user != nullptr&&user->GetCharacter() != nullptr)
+	//	{
+	//		//맵정보 얻어오기
+	//		vector<std::shared_ptr<Component>> vec;
+	//		Component::GetComponents_For_Tag("MapManager", vec);
+	//		auto mm = dynamic_pointer_cast<MapManager>(vec[0]);
+	//		if (!mm) return;
+	//		auto mapInfo = mm->GetMapInfo(user->GetCharacter()->GetMapKey());
+	//		if (mapInfo != nullptr)
+	//		{
+	//			//채널 정보를 가져온다.
+	//			auto channel = mapInfo->GetChannel(user->GetCharacter()->GetChannel());				
+	//			//맵 타입이 Dungeon일 때 몬스터 정보를 보내준다.
+	//			if (MapType::Dungeon == mapInfo->GetMapType())
+	//			{
+	//				auto monsterMng = channel->GetComponent<MonsterManager>();
+	//				if (!monsterMng) return;
+	//				auto func = std::make_shared<Function<void>>([ss, monsterMng]
+	//				{
+	//					auto fbb = monsterMng->Make_FBB_All_Monster();
+	//					auto monsterVec = FB::GetMonsterVec(fbb->GetBufferPointer());
+	//					auto mv = monsterVec->monvector();
+
+	//					ss->PushSend(PS::RESPAWN_MONSTER_VEC, fbb);
+	//				});
+	//				monsterMng->Async_Function(func);
+	//			}
+	//		}
+	//	}
+	//	break;
+	//}
+	
 	case PS::MOVING:
 	{
 		auto ss = session.lock();
@@ -125,19 +179,53 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 		auto user = ss->GetUser().lock();
 		if (ss != nullptr&&user != nullptr&&user->GetCharacter() != nullptr)
 		{
-			auto attack = FB::GetAttack(recv_data);
+			shared_ptr<char[]> data(new char[size], std::default_delete<char[]>());			
+			memcpy(data.get(), recv_data, size);
 			auto channel = GetChannel(user->GetCharacter());
-			if (channel)
+			if (!channel) return;
+			auto mm = channel->GetComponent<MonsterManager>();
+			if(!mm) return;
+			auto func = make_shared<Function<void>>
+				(std::bind(&MonsterManager::DamageProcess, mm, data, user->GetCharacter()));
+			mm->Async_Function(func);
+		}
+	}
+	break;
+
+	case PS::REQ_PORTAL:
+	{
+		cout << "포탈 요청!" << endl;
+		auto ss = session.lock();
+		auto user = ss->GetUser().lock();
+		if (ss != nullptr&&user != nullptr && user->GetCharacter() != nullptr)
+		{
+			auto portalTable = FB::GetPortal(recv_data);
+			vector<std::shared_ptr<Component>> vec;
+			Component::GetComponents_For_Tag("MapManager", vec);
+			auto mm = dynamic_pointer_cast<MapManager>(vec[0]);
+			if (!mm) return;
+			cout << "맵 매니저!" << endl;
+			auto mapinfo = mm->GetMapInfo(user->GetCharacter()->GetMapKey());
+			if (!mapinfo) return;
+			cout << "맵 정보!" << endl;
+			auto portal = mapinfo->GetPortal(portalTable->gateNumber());
+			if (!portal) return;
+			cout << "포탈!" << endl;
+			if (portal->destCode != portalTable->currentMapCode())
 			{
-				auto cm = channel->GetComponent<CharacterManager>();
-				auto fbb = make_shared<flatbuffers::FlatBufferBuilder>();
-				auto attackb = FB::AttackBuilder(*fbb);
-				attackb.add_code(attack->code());
-				attackb.add_yaw(attack->yaw());
-				attackb.add_state(attack->state());
-				fbb->Finish(attackb.Finish());
-				cm->Async_SendAllCharacter(PS::ATTACK, fbb);
+				user->GetCharacter()->SetWarpLocateDestination(portal->position);
+				user->GetCharacter()->SetPosition(portal->position);
+				user->GetCharacter()->SetMapKey(portal->destCode);
+				//auto changed_mapinfo = mm->GetMapInfo(user->GetCharacter()->GetMapKey());
+
+
 			}
+			
+			if (portalTable->destinationMapCode() == user->GetCharacter()->GetMapKey())
+			{
+
+			}
+			//portalTable->currentMapCode()
 		}
 	}
 	break;
@@ -169,30 +257,3 @@ std::shared_ptr<class Channel> InGameState::GetChannel(std::shared_ptr<class Cha
 	return nullptr;
 }
 
-void InGameState::ResDamageVector(void * recv_data)
-{
-	auto ss = session.lock();
-	auto user = ss->GetUser().lock();
-	if (ss != nullptr&&user != nullptr&&user->GetCharacter() != nullptr)
-	{
-		auto temp = FB::GetDamageVec(recv_data);
-		auto dv = temp->damagevector();
-		if (!dv)  return;
-		auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
-		for (auto damage : *dv)
-		{
-			auto character = user->GetCharacter();
-			if (character->GetCode() == damage->attacker_code())
-			{
-				float curDamage, temp;
-				DamageFormula::Get()->GetCurDamage(character->GetCode(), damage->attackType(), 1, character->GetPower(), curDamage, temp);			
-				auto DamageB = FB::DamageBuilder(*fbb);
-				DamageB.add_attacker_code(character->GetCode());
-				DamageB.add_attacker_type(FB::PlayerType::PlayerType_Player);
-				DamageB.add_damaged_code(damage->damaged_code());
-				DamageB.add_damaged_type(FB::PlayerType::PlayerType_Monster);
-				
-			}
-		}
-	}
-}

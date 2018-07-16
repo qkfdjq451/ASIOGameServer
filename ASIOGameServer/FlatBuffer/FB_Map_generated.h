@@ -15,7 +15,9 @@ struct Map;
 struct Map FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_MAPCODE = 4,
-    VT_CHANNEL = 6
+    VT_CHANNEL = 6,
+    VT_POSITION = 8,
+    VT_MAPLEVELNAME = 10
   };
   int32_t mapcode() const {
     return GetField<int32_t>(VT_MAPCODE, 0);
@@ -23,10 +25,19 @@ struct Map FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   int32_t channel() const {
     return GetField<int32_t>(VT_CHANNEL, 0);
   }
+  const Vec3 *position() const {
+    return GetStruct<const Vec3 *>(VT_POSITION);
+  }
+  const flatbuffers::String *mapLevelName() const {
+    return GetPointer<const flatbuffers::String *>(VT_MAPLEVELNAME);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_MAPCODE) &&
            VerifyField<int32_t>(verifier, VT_CHANNEL) &&
+           VerifyField<Vec3>(verifier, VT_POSITION) &&
+           VerifyOffset(verifier, VT_MAPLEVELNAME) &&
+           verifier.Verify(mapLevelName()) &&
            verifier.EndTable();
   }
 };
@@ -39,6 +50,12 @@ struct MapBuilder {
   }
   void add_channel(int32_t channel) {
     fbb_.AddElement<int32_t>(Map::VT_CHANNEL, channel, 0);
+  }
+  void add_position(const Vec3 *position) {
+    fbb_.AddStruct(Map::VT_POSITION, position);
+  }
+  void add_mapLevelName(flatbuffers::Offset<flatbuffers::String> mapLevelName) {
+    fbb_.AddOffset(Map::VT_MAPLEVELNAME, mapLevelName);
   }
   explicit MapBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -55,11 +72,29 @@ struct MapBuilder {
 inline flatbuffers::Offset<Map> CreateMap(
     flatbuffers::FlatBufferBuilder &_fbb,
     int32_t mapcode = 0,
-    int32_t channel = 0) {
+    int32_t channel = 0,
+    const Vec3 *position = 0,
+    flatbuffers::Offset<flatbuffers::String> mapLevelName = 0) {
   MapBuilder builder_(_fbb);
+  builder_.add_mapLevelName(mapLevelName);
+  builder_.add_position(position);
   builder_.add_channel(channel);
   builder_.add_mapcode(mapcode);
   return builder_.Finish();
+}
+
+inline flatbuffers::Offset<Map> CreateMapDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    int32_t mapcode = 0,
+    int32_t channel = 0,
+    const Vec3 *position = 0,
+    const char *mapLevelName = nullptr) {
+  return FB::CreateMap(
+      _fbb,
+      mapcode,
+      channel,
+      position,
+      mapLevelName ? _fbb.CreateString(mapLevelName) : 0);
 }
 
 inline const FB::Map *GetMap(const void *buf) {

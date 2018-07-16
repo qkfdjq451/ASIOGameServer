@@ -6,14 +6,18 @@
 #include "../Channel/Channel.h"
 #include "../User/User.h"
 #include "../Asio/Session/Session.h"
+#include "../Character/CharacterManager.h"
 
 #include "../Navi/Navigation.h"
+
+#include "../ItemManager/Inventory.h"
 
 Character::Character(std::shared_ptr<class User> user, int code)
 	:user(user), code(code) , forward(0,0,0), bMove(false), bChangePosition(false)
 {	
 	mapKey.Set(0);
 	channel.Set(0);
+	inventory = make_shared<Inventory>();
 }
 
 Character::~Character()
@@ -25,6 +29,7 @@ void Character::Init()
 {
 	auto self = shared_from_this();
 
+	//맵, 채널 이동 처리
 	mapKey.InsertPrevEvent([self,this](int mapKey)
 	{		
 		channel.Set(0);
@@ -47,20 +52,33 @@ void Character::Init()
 					auto sesstion = shareduser->GetSesstion().lock();
 					if (sesstion)
 					{
-						sesstion->PushSend(PS::CON_ENTER_MAP);
+						auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
+						auto levelName = fbb->CreateString(mapinfo->GetLevelName());
+						auto mapB = FB::MapBuilder(*fbb);						
+						mapB.add_mapcode(mapKey);
+						mapB.add_mapLevelName(levelName);		
+						mapB.add_position(&warpLocateDestination.ToFBVector3());
+						fbb->Finish(mapB.Finish());
+
+						//auto zz = mapinfo->GetLevelName();
+
+						sesstion->PushSend(PS::CON_ENTER_MAP, fbb);
 					}
 				}
 				mapinfo->InsertCharacter(self);
 			}
 		}
 
+		//TODO : 나중에 1->code 로 변경
+		//inventory->SetInventory(code);
+		inventory->SetInventory(1);
 	});
 
 	channel.InsertPrevEvent([this](int channel)
 	{
 		if (channel != 0)
 		{
-			//TODO : 채널이 변경됐을 때 이전에 해야할 처리
+			//채널이 변경됐을 때 이전에 해야할 처리
 			vector<std::shared_ptr<Component>> vec;
 			Component::GetComponents_For_Tag("MapManager", vec);
 			auto mm = dynamic_pointer_cast<MapManager>(vec[0]);
@@ -74,7 +92,7 @@ void Character::Init()
 
 	channel.InsertPostEvent([self, this](int key)
 	{
-		//TODO : 채널이 변경된 이후에 해야할 처리
+		//채널이 변경된 이후에 해야할 처리
 		if (key != 0)
 		{
 			vector<std::shared_ptr<Component>> vec;

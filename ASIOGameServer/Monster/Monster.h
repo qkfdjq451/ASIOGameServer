@@ -23,6 +23,8 @@ public:
 	Monster(int code);
 	~Monster();
 
+
+
 public:
 	//접근자
 	//Get
@@ -31,7 +33,7 @@ public:
 	std::string GetName() { return nickname; }
 	float GetMaxHP() { return maxHp; }
 	float GetCurrentHp() { return currentHp; }
-	float GetPower() { return power.Get(); }
+	float GetPower() { return power; }
 	float GetSpeed() { return speed; }
 	Vector3 GetPosition() { return position; }
 	
@@ -40,7 +42,7 @@ public:
 	void SetName(std::string _name) { nickname = _name; }
 	void SetMaxHP(float _hp) { maxHp = _hp; }
 	void SetCurrentHp(float _hp) { currentHp =(_hp); }
-	void SetPower(float _power) { power.Set(_power); }
+	void SetPower(float _power) { power=_power; }
 	void SetSpeed(float _speed) { speed = _speed; }
 	void SetPosition(const Vector3& vec3) { position = vec3; }
 	
@@ -52,7 +54,10 @@ public:
 
 	//기능
 	void Respawn();
-	bool GetDamage(std::shared_ptr<class Character> attacker, FB::AttackState state);
+	void Dead();
+	void SetMonsterBuilder(FB::MonsterBuilder* mb);
+	bool CheckRange(std::shared_ptr<class Character> attacker, FB::AttackState state);
+	bool GetDamage(std::shared_ptr<class Character> attacker, FB::AttackState state, FB::DamageBuilder * db = nullptr);
 
 
 	//이동 관련 변수와 함수
@@ -64,7 +69,6 @@ public:
 	bool Moving(float delta);
 	void GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb, vector<flatbuffers::Offset<FB::Move>> &vec);
 
-	RespawnRange& GetRespawnRange() { return respawn_range; }
 
 	//Monster 행동에 관한 함수
 	bool FindPath(Vector3 dest);	
@@ -76,6 +80,7 @@ public:
 
 	bool Chase(float delta);
 	bool Attack(float delta);
+	bool Die(float delta);
 
 	//행동에 관한 변수
 	class BTNode* ai;
@@ -84,6 +89,8 @@ public:
 	IdleState idleState;
 	float idleTime;
 	float curIdleTime;
+
+	bool bAttacking;
 	std::chrono::system_clock::time_point attackCoolTime;
 
 	std::deque<Vector3> paths;
@@ -94,7 +101,6 @@ protected:
 	int monsterNumber;		//몬스터 식별 번호
 
 	std::string nickname;
-	RespawnRange respawn_range;
 
 	//생존, 채력, 리스폰
 	React<bool> bAlive;
@@ -103,8 +109,11 @@ protected:
 	float respawnTime;
 	float curRespawnTime;
 
+	float respawnRange;
+	Vector3 respawnPosition;
 
-	React<float> power;
+
+	float power;
 	float speed;
 	Vector3 position;
 

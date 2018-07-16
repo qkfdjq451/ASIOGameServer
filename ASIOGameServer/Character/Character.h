@@ -14,7 +14,7 @@ public:
 	//접근자
 	//Get
 	int GetCode() { return code; }
-	int GetTypeCode() { return characterTypeCode; }
+	FB::CharacterType GetTypeCode() { return characterTypeCode; }
 	int GetLevel() { return level; }
 	std::string GetName() { return nickname; }
 	float GetMaxHP() { return maxHP; }
@@ -29,7 +29,7 @@ public:
 
 	
 	//Set
-	void SetTypeCode(int _code) { characterTypeCode = _code; }
+	void SetTypeCode(FB::CharacterType _code) { characterTypeCode = _code; }
 	void SetLevel(int _level) { level = _level; }
 	void SetMapKey(int mapkey) { mapKey.Set(mapkey); }
 	void SetChannel(int number) { channel.Set(number); }
@@ -59,13 +59,18 @@ public:
 
 	std::weak_ptr<class CharacterManager> GetCharacterManager() { return cm; }
 
+	void SetWarpLocateDestination(Vector3 _pos) { warpLocateDestination = _pos; }
+	void SetWarpPosition() { warpLocateDestination = position; }
+
 protected:
 	int code;
-	int characterTypeCode;
+	enum FB::CharacterType characterTypeCode;
 
+	//자기 자신의  user와 manager
 	std::weak_ptr<class User> user;
 	std::weak_ptr<class CharacterManager> cm;
 
+	//status
 	int level;
 	std::string nickname;
 	
@@ -78,14 +83,15 @@ protected:
 	float maxSpeed;
 	float currentSpeed;
 
-
-
+	//맵과 좌표
 	Vector3 position;
 	Vector3 dest;
 
 	React<int> mapKey;
 	React<int> channel;
+	
+	Vector3 warpLocateDestination;
 
-
-	std::weak_ptr<class Navigation> navi;
+	//아이템 관련
+	std::shared_ptr<class Inventory> inventory;
 };

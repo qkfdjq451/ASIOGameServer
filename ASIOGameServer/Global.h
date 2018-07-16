@@ -1,14 +1,16 @@
 //전역 헤더
 #pragma once
-
 #pragma warning( disable : 4267 )		//  size_t <-> other type 변환 경고
+
 
 #define BUFSIZE	2048
 #define _WIN32_WINNT  0x0603
 
+
 #define MIN_flt			(1.175494351e-38F)		
 #define MAX_flt			(3.402823466e+38F)
 
+//#include "CharacterSetConvert.h"
 #include <iostream>
 #include <unordered_map>
 #include <string>
@@ -29,6 +31,9 @@
 #include <fstream>
 #include <stack>
 #include <deque>
+#include <array>
+
+
 //전역 파일 위치
 const std::string NaviDatas = "../NavigationData/";
 
@@ -41,6 +46,7 @@ typedef std::map<const std::string, std::vector<const char*>> QMap;
 typedef std::vector<std::vector<std::pair<std::string,std::string>>> QVector;
 typedef std::vector<std::shared_ptr<class Component>> ComVector;
 
+#include "./Utility/ConvertUTF8.h"
 #include "Math.h"
 #include "./Packet.h"
 

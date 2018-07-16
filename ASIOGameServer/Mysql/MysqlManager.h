@@ -11,9 +11,12 @@ public:
 	// MysqlPool::QVecto = Query 결과 테이블
 	// bool  = 성공 여부 
 	void Async_Query(const char* sql, std::function<void(QVector&, bool)> func);
+	void Async_Query_None_Result(const char* sql, std::function<void(bool)> func);
 
 	//Blocking
-	QVector Query(const char* sql);
+	QVector Query_Vector(const char* sql);
+	bool Query(const char* sql);
+	bool Query(const char* sql,string& result);
 	
 private:
 	std::unique_ptr<class MysqlPool> mysql_pool;
