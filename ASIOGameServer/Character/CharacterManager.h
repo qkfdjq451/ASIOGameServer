@@ -15,7 +15,7 @@ public:
 
 	int GetCharacterCount();	
 
-	std::shared_ptr<flatbuffers::FlatBufferBuilder> Make_FBB_All_CharacterInfo();
+	int Make_FBB_All_CharacterInfo(vector<std::shared_ptr<flatbuffers::FlatBufferBuilder>>&fbbArray, int slice=10);
 private:
 
 	bool InsertCharacter(std::shared_ptr<class Character> character);

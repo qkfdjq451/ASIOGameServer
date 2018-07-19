@@ -14,7 +14,6 @@ MapInfo::MapInfo()
 
 void MapInfo::BeginPlay()
 {
-
 	//네비게이션 메쉬 임포트
 	ifstream ifs;
 	ifs.open(NaviDatas+"MapCode"+to_string(mapCode)+".navmesh", ios::in | ios::binary);
@@ -56,15 +55,14 @@ void MapInfo::BeginPlay()
 			spawnDescs.push_back(desc);
 		}
 	}
-
-	
+		
 	//채널 개설
-	for (int i = 1; i <= 3; i++)
-	{
-		auto channel = Component::CreateComponent<Channel>(mapCode,i);		
-		Attach(channel);
-		channels.push_back(channel);
-	}
+	//for (int i = 1; i <= 3; i++)
+	//{
+	//	auto channel = Component::CreateComponent<Channel>(mapCode,i);		
+	//	Attach(channel);
+	//	channels[i] = channel;
+	//}
 
 	//포탈정보 불러오기
 	char query[128];
@@ -83,7 +81,36 @@ void MapInfo::BeginPlay()
 
 void MapInfo::PrevTick()
 {
-
+	// 비어 있는 채널 삭제
+	for (auto iter= channels.begin();iter!= channels.end();)
+	{
+		auto channel = iter->second.lock();
+		if (!channel)
+		{
+			channel->Distroy();
+			printf("%d 채널 삭제 됨\n", iter->first);
+			channels.erase(iter++);
+			continue;
+		}
+		auto cm = channel->GetComponent<CharacterManager>();
+		if (!cm ||cm->GetCharacterCount() == 0)
+		{
+			channel->AddTime(Time::Delta());
+			if (channel->GetTime() >= 60)
+			{
+				channel->Distroy();
+				printf("%d 채널 삭제 됨\n", iter->first);
+				channels.erase(iter++);
+				continue;
+			}
+		}
+		else
+		{
+			channel->ResetTime();
+		}
+		++iter;
+		
+	}
 }
 
 void MapInfo::Tick()
@@ -99,29 +126,50 @@ void MapInfo::EndPlay()
 
 bool MapInfo::InsertCharacter(std::shared_ptr<class Character> character)
 {
-	vector<shared_ptr<Channel>> vec;
-	GetComponents<Channel>(vec);
-
-	for (auto ch : vec)
+	//기존 채널의 인원수 채크
+	for (auto ch : channels)
 	{
-		auto cm = ch->GetComponent<CharacterManager>();
-		if (cm)
-		{
-			if (cm->GetCharacterCount() < Channel::Max_Character_Count)
-			{				
-				character->SetChannel(ch->GetNumber());
-				return true;
-			}
-		}		
+		auto channel = ch.second.lock();
+		auto cm = channel->GetComponent<CharacterManager>();
+		int temp = maxUserCount * 0.8;
+		if (cm->GetCharacterCount() < temp)
+		{	
+
+			character->SetChannel(channel->GetNumber());
+			return true;
+		}
 	}
-	return false;
+	// 들어 갈 수 있는 채널이 없을 때 채널 개설
+
+	// 비어 있는 채널 찾기
+	int channelNumber = 1;
+	while (true)
+	{
+		auto result = channels.find(channelNumber);
+		if (result == channels.end())
+			break;
+		channelNumber++;
+	}
+
+	// 채널 생성
+	auto channel = Component::CreateComponent<Channel>(mapCode, channelNumber);
+	Attach(channel);
+	channels[channelNumber] = channel;
+	printf("%d 채널 생성\n", channelNumber);
+
+	// 창설된 채널에 입장 허가
+	character->SetChannel(channelNumber);
+	return true;
 }
 
 std::shared_ptr<class Channel> MapInfo::GetChannel(int index)
 {
-	if (channels.size() < index || index < 0)
-		return nullptr;
-	return channels[index - 1].lock();
+	auto result = channels.find(index);
+	if (result != channels.end())
+	{
+		return result->second.lock();
+	}
+	return nullptr;
 }
 
 Portal* MapInfo::GetPortal(int gateNumber)

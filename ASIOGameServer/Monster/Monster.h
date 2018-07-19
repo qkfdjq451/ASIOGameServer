@@ -67,11 +67,13 @@ public:
 	void SetMove(bool move) { bMove = move; }
 	void SetForward(Vector3 _forward);
 	bool Moving(float delta);
-	void GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb, vector<flatbuffers::Offset<FB::Move>> &vec);
+	bool GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb, vector<flatbuffers::Offset<FB::Move>> &vec);
 
 
 	//Monster 행동에 관한 함수
 	bool FindPath(Vector3 dest);	
+	
+
 	bool UpdateState(float delta);
 
 	bool UpdateIdle(float delta);

@@ -110,29 +110,57 @@ void MonsterManager::PrevTick()
 void MonsterManager::Tick()
 {
 	PrevTick();
+
 	saveTime += Time::Delta();
 	if (saveTime > 0.4)
 	{
-		saveTime = 0;
-		auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
-		vector<flatbuffers::Offset<FB::Move>> moveVec;
+		saveTime = 0;		
+		vector<std::shared_ptr<flatbuffers::FlatBufferBuilder>> fbbArray;
+		vector<std::shared_ptr<vector<flatbuffers::Offset<FB::Move>>>> moveVecArray;
+		std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
+		std::shared_ptr<vector<flatbuffers::Offset<FB::Move>>> moveVec= std::make_shared<vector<flatbuffers::Offset<FB::Move>>>();
+		int count = 0;
+		int total = 0;
+
 		for (auto monster : monsters)
 		{
 			auto mon = monster.second.lock();
-			mon->GetMoveInfo(fbb, moveVec);
+			mon->GetMoveInfo(fbb, *moveVec);
+			count++;
+			if (count == 10)
+			{
+				fbbArray.push_back(fbb);
+				moveVecArray.push_back(moveVec);
+				fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
+				moveVec = std::make_shared<vector<flatbuffers::Offset<FB::Move>>>();
+				count = 0;
+			}
+			total++;
 		}
 
-		if (moveVec.size() > 0)
+		if (count != 0)
 		{
-			auto vec = fbb->CreateVector(moveVec);
-			auto movebb = FB::CreateMoveVec(*fbb, vec);
-			fbb->Finish(movebb);
+			fbbArray.push_back(fbb);
+			moveVecArray.push_back(moveVec);
+		}
 
+
+		if (total > 0)
+		{
 			auto channel = GetParentComponent<Channel>();
 			if (!channel) return;
 			auto cm = channel->GetComponent<CharacterManager>();
 			if (!cm) return;
-			cm->Async_SendAllCharacter(PS::MONSTER_MOVING_VECTOR, fbb);
+
+			for (int i = 0; i < fbbArray.size(); i++)
+			{
+				fbb = fbbArray[i];
+				moveVec = moveVecArray[i];
+				auto vec = fbb->CreateVector(*moveVec);
+				auto movebb = FB::CreateMoveVec(*fbb, vec);
+				fbb->Finish(movebb);
+				cm->Async_SendAllCharacter(PS::MONSTER_MOVING_VECTOR, fbb);
+			}
 		}
 	}
 }
@@ -142,10 +170,16 @@ void MonsterManager::EndPlay()
 	
 }
 
-std::shared_ptr<flatbuffers::FlatBufferBuilder> MonsterManager::Make_FBB_All_Monster()
+int MonsterManager::Make_FBB_All_Monster(vector<std::shared_ptr<flatbuffers::FlatBufferBuilder>>&fbbArray, int slice)
 {
-	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
-	vector<flatbuffers::Offset<FB::Monster>> vec;
+	vector<std::shared_ptr<vector<flatbuffers::Offset<FB::Monster>>>> monsterVecArray;
+
+	std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+	std::shared_ptr<vector<flatbuffers::Offset<FB::Monster>>> monsterVec = std::make_shared<vector<flatbuffers::Offset<FB::Monster>>>();
+
+	int count = 0;
+	int total = 0;
+
 	for (auto node : monsters)
 	{
 		auto monster = node.second.lock();
@@ -161,14 +195,33 @@ std::shared_ptr<flatbuffers::FlatBufferBuilder> MonsterManager::Make_FBB_All_Mon
 			monsterB.add_nick(nick);
 			monsterB.add_power(monster->GetPower());
 			monsterB.add_speed(monster->GetSpeed());
-			vec.push_back(monsterB.Finish());
+			monsterVec->push_back(monsterB.Finish());
+			count++;
+
+			if (count == slice)
+			{
+				count = 0;
+				fbbArray.push_back(fbb);
+				monsterVecArray.push_back(monsterVec);
+				auto vecoffset = fbb->CreateVector(*monsterVec);
+				fbb->Finish(FB::CreateMonsterVec(*fbb, vecoffset));
+				fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+				monsterVec = std::make_shared<vector<flatbuffers::Offset<FB::Monster>>>();
+			}
+			total++;
+
+			if (count != 0)
+			{
+				fbbArray.push_back(fbb);
+				monsterVecArray.push_back(monsterVec);
+				auto vecoffset = fbb->CreateVector(*monsterVec);
+				fbb->Finish(FB::CreateMonsterVec(*fbb, vecoffset));
+			}
 		}
 	}
-	printf("FBB에 저장한 몬스터의 수 : %d", vec.size());
-	auto vecoffset = fbb->CreateVector(vec);
-	fbb->Finish(FB::CreateMonsterVec(*fbb, vecoffset));
-
-	return fbb;
+	printf("FBB에 저장한 몬스터의 수 : %d\n", total);
+	
+	return total;
 }
 
 void MonsterManager::Add_Spawn_Monster(const MonsterSpawnDesc & desc)

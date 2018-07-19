@@ -74,13 +74,21 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 			if (!cm) return;
 			auto func = std::make_shared<Function<void>>([ss,cm] 
 			{
-				auto fbb = cm->Make_FBB_All_CharacterInfo();
-				ss->PushSend(PS::ENTER_NEW_CHARACTER_VECTOR, move(fbb));
+				vector<std::shared_ptr<flatbuffers::FlatBufferBuilder>> fbbArray;
+				int total = cm->Make_FBB_All_CharacterInfo(fbbArray);
+				if (total != 0)
+				{
+					for (auto fbb : fbbArray)
+					{
+						ss->PushSend(PS::ENTER_NEW_CHARACTER_VECTOR, move(fbb));
+					}
+				}
 			});
 			cm->Async_Function(func);
 		}
 		break;
 	}
+
 	//case PS::REQ_MONSTER_LIST:
 	//{
 	//	auto ss = session.lock();
@@ -137,7 +145,9 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 				auto character = user->GetCharacter();
 				auto mapinfo = mapmanager->GetMapInfo(user->GetCharacter()->GetMapKey());
 				auto channel = mapinfo->GetChannel(user->GetCharacter()->GetChannel());
+				if (!channel)return;
 				auto cm = channel->GetComponent<CharacterManager>();
+				if (!cm)return;
 				auto func = make_shared<Function<FB::MoveState>>([character, speed,forwardVector, positionVector](FB::MoveState state)
 				{
 					character->SetPositionZ(positionVector.z);

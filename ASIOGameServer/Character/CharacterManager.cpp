@@ -88,15 +88,21 @@ void CharacterManager::SendAllCharacter(const PS & symbol, std::shared_ptr<flatb
 	}
 }
 
-std::shared_ptr<flatbuffers::FlatBufferBuilder> CharacterManager::Make_FBB_All_CharacterInfo()
+int CharacterManager::Make_FBB_All_CharacterInfo(vector<std::shared_ptr<flatbuffers::FlatBufferBuilder>>& fbbArray,int slice)
 {
-	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
-	vector<flatbuffers::Offset<FB::Character>> vec;
+	vector<std::shared_ptr<vector<flatbuffers::Offset<FB::Character>>>> characterVecArray;
+
+	std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+	std::shared_ptr<vector<flatbuffers::Offset<FB::Character>>> characterVec = std::make_shared<vector<flatbuffers::Offset<FB::Character>>>();
+
+	int count = 0;
+	int total = 0;
+
 	for (auto character : characters)
 	{
-		auto ch = character.second.lock();
+		auto ch = character.second.lock();		
 		if (ch)
-		{
+		{			
 			auto nick = fbb->CreateString(ch->GetName());
 			auto charB = FB::CharacterBuilder(*fbb);
 			charB.add_code(ch->GetCode());
@@ -107,12 +113,31 @@ std::shared_ptr<flatbuffers::FlatBufferBuilder> CharacterManager::Make_FBB_All_C
 			charB.add_power(ch->GetPower());
 			charB.add_speed(ch->GetSpeed());
 			charB.add_position(&ch->GetPosition().ToFBVector3());
-			vec.push_back(charB.Finish());
+			characterVec->push_back(charB.Finish());
+			count++;
+
+			if (count == slice)
+			{
+				count = 0;
+				fbbArray.push_back(fbb);
+				characterVecArray.push_back(characterVec);
+				auto vecoffset = fbb->CreateVector(*characterVec);
+				fbb->Finish(FB::CreateCharacterVec(*fbb, vecoffset));
+				fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+				characterVec = std::make_shared<vector<flatbuffers::Offset<FB::Character>>>();
+			}
+			total++;
+
+			if (count != 0)
+			{
+				fbbArray.push_back(fbb);
+				characterVecArray.push_back(characterVec);
+				auto vecoffset = fbb->CreateVector(*characterVec);
+				fbb->Finish(FB::CreateCharacterVec(*fbb, vecoffset));
+			}
 		}
 	}
-	auto vecoffset = fbb->CreateVector(vec);
-	fbb->Finish(FB::CreateCharacterVec(*fbb, vecoffset));
-	return fbb;
+	return total;
 }
 
 bool CharacterManager::EraseCharacter(int key)
@@ -220,7 +245,7 @@ void CharacterManager::Tick()
 			ch->Moving(Time::Delta());
 		}
 
-		if (saveTime > 0.4)
+		/*if (saveTime > 0.4)
 		{
 			saveTime = 0;
 			auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
@@ -238,6 +263,52 @@ void CharacterManager::Tick()
 				fbb->Finish(movebb);
 				SendAllCharacter(PS::MOVING_VECTOR, fbb);
 			}			
+		}*/
+		if (saveTime > 0.4)
+		{
+			saveTime = 0;
+			vector<std::shared_ptr<flatbuffers::FlatBufferBuilder>> fbbArray;
+			vector<std::shared_ptr<vector<flatbuffers::Offset<FB::Move>>>> moveVecArray;
+			std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
+			std::shared_ptr<vector<flatbuffers::Offset<FB::Move>>> moveVec = std::make_shared<vector<flatbuffers::Offset<FB::Move>>>();
+			int count = 0;
+			int total = 0;
+
+			for (auto character : characters)
+			{
+				auto mon = character.second.lock();
+				mon->GetMoveInfo(fbb, *moveVec);
+				count++;
+				if (count == 10)
+				{
+					fbbArray.push_back(fbb);
+					moveVecArray.push_back(moveVec);
+					fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
+					moveVec = std::make_shared<vector<flatbuffers::Offset<FB::Move>>>();
+					count = 0;
+				}
+				total++;
+			}
+
+			if (count != 0)
+			{
+				fbbArray.push_back(fbb);
+				moveVecArray.push_back(moveVec);
+			}
+
+
+			if (total > 0)
+			{				
+				for (int i = 0; i < fbbArray.size(); i++)
+				{
+					fbb = fbbArray[i];
+					moveVec = moveVecArray[i];
+					auto vec = fbb->CreateVector(*moveVec);
+					auto movebb = FB::CreateMoveVec(*fbb, vec);
+					fbb->Finish(movebb);
+					SendAllCharacter(PS::MOVING_VECTOR, fbb);
+				}
+			}
 		}
 	}	
 }

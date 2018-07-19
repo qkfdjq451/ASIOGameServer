@@ -9,9 +9,6 @@ public:
 	void Async_InsertCharacter(std::shared_ptr<class Character> character);
 	void Async_EraseCharacter(int key);
 
-
-	enum { Max_Character_Count = 50 };
-
 	int GetNumber() { return number; }
 	int GetMapCode() { return mapCode; }
 
@@ -27,6 +24,15 @@ private:
 	int number;
 	int mapCode;
 
+
 	std::vector<std::shared_ptr<class Character>> req_Insert_list;
 	std::vector<int> req_erase_list;
+
+	//삭제처리시 사용할 함수와 변수
+public:
+	float GetTime() { return time; }
+	void AddTime(float addTime) { time += addTime; }
+	void ResetTime() { time = 0; }
+private:
+	float time = 0;
 };

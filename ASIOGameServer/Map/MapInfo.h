@@ -40,6 +40,7 @@ private:
 	std::shared_ptr<class Navigation> navi;
 
 	std::vector<struct MonsterSpawnDesc> spawnDescs;
-	std::vector<std::weak_ptr<class Channel>> channels;
+	std::map<int,std::weak_ptr<class Channel>> channels;
 	std::map<int, Portal> portals;
+	int maxUserCount;
 };

@@ -46,8 +46,8 @@ MYSQL* MysqlPool::createOneConnect() {
 			connect_count++;
 			//c++ 기본 케릭터 set은 euckr이니 euckr로  설정
 			//mysql_query(conn, "set session character_set_connection=euckr;");
-			//mysql_query(conn, "set session character_set_results=euckr;");
-			//mysql_query(conn, "set session character_set_client=euckr;");
+			mysql_query(conn, "set session character_set_results=utf8;");
+			mysql_query(conn, "set session character_set_client=euckr;");
 			return conn;
 		}
 		else {
@@ -114,6 +114,16 @@ MYSQL* MysqlPool::getOneConnect()
 	return conn;
 }
 
+MYSQL * MysqlPool::getContinueConnect()
+{
+	MYSQL * con = nullptr;
+	while (!con)
+	{
+		con = getOneConnect();
+	}
+	return con;
+}
+
 void MysqlPool::close(MYSQL* conn) 
 {
 	if (conn != nullptr)
@@ -126,7 +136,7 @@ void MysqlPool::close(MYSQL* conn)
 
 QMap MysqlPool::executeSql_Map(const char* sql)
 {
-	MYSQL* conn = getOneConnect();
+	MYSQL* conn = getContinueConnect();
 	QMap results;
 	if (conn) 
 	{
@@ -172,7 +182,7 @@ QMap MysqlPool::executeSql_Map(const char* sql)
 
 QVector MysqlPool::executeSql_Vector(const char * sql)
 {
-	MYSQL* conn = getOneConnect();
+	MYSQL* conn = getContinueConnect();
 	QVector result;
 	if (conn)
 	{
@@ -212,7 +222,7 @@ QVector MysqlPool::executeSql_Vector(const char * sql)
 
 bool MysqlPool::executeSql_Vector(const char * sql, QVector& result)
 {
-	MYSQL* conn = getOneConnect();
+	MYSQL* conn = getContinueConnect();
 	if (conn)
 	{
 		if (mysql_query(conn, sql) == 0)
@@ -244,6 +254,7 @@ bool MysqlPool::executeSql_Vector(const char * sql, QVector& result)
 		{
 			//쿼리 실패 로그 남기기
 			std::cerr << mysql_error(conn) << std::endl;
+			close(conn);
 			return false;
 		}
 	}
@@ -274,7 +285,7 @@ bool MysqlPool::executeSql(const char * sql)
 
 bool MysqlPool::executeSql(const char * sql, string & result)
 {
-	MYSQL* conn = getOneConnect();
+	MYSQL* conn = getContinueConnect();
 	if (conn)
 	{
 		if (mysql_query(conn, sql) == 0)

@@ -15,11 +15,6 @@ MySQLManager::~MySQLManager()
 
 }
 
-string MySQLManager::Select_UserCharacter(int char_code)
-{
-	string sql = "select * from UserCharacter natural join CharacterPosition where UserCharacter.CharacterCode = " + to_string(char_code) + ";";
-	return sql;
-}
 
 void MySQLManager::Async_Query(const char * sql, std::function<void(QVector&, bool)> func)
 {
@@ -31,12 +26,22 @@ void MySQLManager::Async_Query(const char * sql, std::function<void(QVector&, bo
 	});
 }
 
-void MySQLManager::Async_Query_None_Result(const char * sql, std::function<void(bool)> func)
+void MySQLManager::Async_Query_None_Select(const char * sql, std::function<void(bool)> func)
 {
 	std::async(std::launch::async, [this, sql, func]
 	{
 		bool result = mysql_pool->executeSql(sql);
 		func(result);
+	});
+}
+
+void MySQLManager::Async_Query_One_Select(const char * sql, std::function<void(string, bool)> func)
+{
+	std::async(std::launch::async, [this, sql, func]
+	{
+		string str;
+		bool result = mysql_pool->executeSql(sql, str);
+		func(str,result);
 	});
 }
 

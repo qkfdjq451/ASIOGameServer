@@ -62,6 +62,17 @@ public:
 	void SetWarpLocateDestination(Vector3 _pos) { warpLocateDestination = _pos; }
 	void SetWarpPosition() { warpLocateDestination = position; }
 
+	void SetStartPoint(int _key) { startPointKey = _key; }
+	int GetStartPoint() { return startPointKey; }
+
+	//°æÇèÄ¡ °ü·Ã
+	bool LevelUp();
+	void SetReqExp(int _reqExp) { reqExp = _reqExp; }
+	void SetCurrentExp(int _currentExp) { currentExp = _currentExp; }
+	void AddCurrentExp(int _value);
+	int GetReqExp() { return reqExp; }
+	int GetCurrentExp() { return currentExp; }
+
 protected:
 	int code;
 	enum FB::CharacterType characterTypeCode;
@@ -83,7 +94,11 @@ protected:
 	float maxSpeed;
 	float currentSpeed;
 
+	int reqExp;
+	int currentExp;
+
 	//¸Ê°ú ÁÂÇ¥
+	int startPointKey;
 	Vector3 position;
 	Vector3 dest;
 

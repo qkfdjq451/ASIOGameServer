@@ -60,10 +60,13 @@ void Component::Distroy()
 	{
 		com->Distroy();
 	}
+	int a = 10;
 }
 
 void Component::Update()
-{		
+{	
+	auto self = shared_from_this();
+
 	if (state == ComponentState::Alive)
 	{
 		Tick();		
@@ -79,11 +82,12 @@ void Component::Update()
 	{
 		EndPlay();
 		Remove();
-		return;
 	}
 
-	for (auto com : children)
-	{
+	for (auto iter = children.begin();iter!=children.end();)
+	{	
+		auto com = (*iter);
+		++iter;
 		com->Update();
 	}
 }
@@ -92,13 +96,15 @@ void Component::Remove()
 {
 	if (parent)
 	{
+		//printf("테스트!!\n");
 		parent->Detach(shared_from_this());
 		Components.erase(id);
+		//printf("테스트!23423!\n");
 	}
-	for (auto com : children)
-	{
-		com->Remove();
-	}
+	//for (auto com : children)
+	//{
+	//	com->Remove();
+	//}	
 	for (auto t : tag)
 	{
 		RemoveTag(t);

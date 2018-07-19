@@ -174,7 +174,7 @@ bool Monster::Moving(float delta)
 	return false;
 }
 
-void Monster::GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb, vector<flatbuffers::Offset<FB::Move>>& vec)
+bool Monster::GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb, vector<flatbuffers::Offset<FB::Move>>& vec)
 {
 	if (bChangePosition)
 	{
@@ -186,7 +186,9 @@ void Monster::GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb, v
 		moveb.add_speed(speed);
 		vec.push_back(moveb.Finish());
 		bChangePosition = false;
+		return true;
 	}
+	return false;
 }
 
 bool Monster::FindPath(Vector3 dest)
@@ -228,7 +230,7 @@ bool Monster::FindPath(Vector3 dest)
 		{
 			float height;
 			query->getPolyHeight(straightPathPolys[i], (float*)&straightPath[i], &height);
-			straightPath[i].y = height;
+			//straightPath[i].y = height;
 			paths.push_back(straightPath[i].ToUnrealLocation());
 		}
 
@@ -254,6 +256,7 @@ bool Monster::FindPath(Vector3 dest)
 	}
 	return false;
 }
+
 
 
 bool Monster::UpdateState(float delta)

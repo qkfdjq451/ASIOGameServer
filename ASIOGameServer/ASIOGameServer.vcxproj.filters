@@ -19,12 +19,6 @@
     <Filter Include="Component\GameManager">
       <UniqueIdentifier>{0bf2a45e-3453-4d5f-87f3-08110b72f66d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\Map">
-      <UniqueIdentifier>{84740564-63b2-4f7c-9219-46d4de2b9a15}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Channel">
-      <UniqueIdentifier>{d6f4b89c-7010-49a5-90cf-cb0e308d5921}</UniqueIdentifier>
-    </Filter>
     <Filter Include="SingletonManagerClass">
       <UniqueIdentifier>{33f18ce2-d7d4-4fff-be73-ac3b6bc02b48}</UniqueIdentifier>
     </Filter>
@@ -78,6 +72,12 @@
     </Filter>
     <Filter Include="Utility">
       <UniqueIdentifier>{3ce0f2c2-b72e-422d-953c-23251915e118}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Map">
+      <UniqueIdentifier>{84740564-63b2-4f7c-9219-46d4de2b9a15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Channel">
+      <UniqueIdentifier>{d6f4b89c-7010-49a5-90cf-cb0e308d5921}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -31,8 +31,7 @@ void server::NewUser(std::shared_ptr<SUTuple> su)
 
 	user->SetSession(session);
 	session->SetUser(user);
-
-
+	
 	key++;
 }
 
@@ -53,8 +52,7 @@ void server::do_accept()
 			auto newuserFunc = std::make_shared<Function<std::shared_ptr<SUTuple >>>(
 				bind(&server::NewUser, this, std::placeholders::_1),move(su));
 			WorkerGroup::Get_IOGroup()->PostFuction(newuserFunc);
-		}
-		//¿Á±Õ»£√‚¿Ã æ∆¥‘.
+		}		
 		do_accept();
 	});
 }

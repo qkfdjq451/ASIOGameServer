@@ -15,10 +15,11 @@ struct StatusInfo
 class StatusManager
 {
 public:
-	bool SetStatus(std::shared_ptr<class Character> character);
-	
+	bool SetStatus(std::shared_ptr<class Character> character);	
+
 private:
 	std::map<int, StatusInfo> statusInfos;
+	std::vector<int> expReqInfos;
 private:
 	StatusManager();
 	~StatusManager();

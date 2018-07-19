@@ -156,7 +156,7 @@ union RecvBuffer
 struct SendBuffer : public std::enable_shared_from_this<SendBuffer>
 {
 	SendBuffer(const PS& symbol, std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb)
-	{
+	{		
 		buffer.packet.size = fbb->GetSize() + sizeof(unsigned short) + sizeof(PS);
 
 		buffer.packet.symbol = symbol;
@@ -164,7 +164,7 @@ struct SendBuffer : public std::enable_shared_from_this<SendBuffer>
 	}
 
 	SendBuffer(const PS& symbol, void* buffer_pointer, short buffersize)
-	{		
+	{	
 		buffer.packet.size = buffersize + sizeof(unsigned short) + sizeof(PS);
 
 		buffer.packet.symbol = symbol;
@@ -187,8 +187,6 @@ struct SendBuffer : public std::enable_shared_from_this<SendBuffer>
 			uint8 data_buffer[BUFSIZE];
 		} packet;
 	} buffer;
-
-	//unsigned short com_sendSize;
 };
 
 class Func

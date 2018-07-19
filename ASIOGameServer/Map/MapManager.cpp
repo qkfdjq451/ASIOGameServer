@@ -17,6 +17,7 @@ void MapManager::BeginPlay()
 			info->mapName = map[1].second;
 			info->LevelName = map[2].second;
 			info->mapType = StringToMapType(map[3].second);
+			info->maxUserCount = stoi(map[4].second);
 			maps.insert(make_pair(code, info));
 			Attach(info);
 		}

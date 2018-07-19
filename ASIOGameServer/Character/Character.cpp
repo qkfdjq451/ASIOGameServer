@@ -12,6 +12,8 @@
 
 #include "../ItemManager/Inventory.h"
 
+#include "../StatusManager/StatusManager.h"
+
 Character::Character(std::shared_ptr<class User> user, int code)
 	:user(user), code(code) , forward(0,0,0), bMove(false), bChangePosition(false)
 {	
@@ -37,7 +39,6 @@ void Character::Init()
 
 	mapKey.InsertPostEvent([this,self](int mapKey)
 	{
-		cout << "멥키 : " << mapKey << endl;
 		if (mapKey != 0)
 		{
 			vector<std::shared_ptr<Component>> vec;
@@ -71,7 +72,7 @@ void Character::Init()
 
 		//TODO : 나중에 1->code 로 변경
 		//inventory->SetInventory(code);
-		inventory->SetInventory(1);
+		//inventory->SetInventory(1);
 	});
 
 	channel.InsertPrevEvent([this](int channel)
@@ -161,6 +162,22 @@ void Character::GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb,
 		moveb.add_speed(currentSpeed);
 		vec.push_back(moveb.Finish());
 		bChangePosition = false;
+	}
+}
+
+bool Character::LevelUp()
+{
+	currentExp -= reqExp;
+	StatusManager::Get()->SetStatus(shared_from_this());
+	return true;
+}
+
+void Character::AddCurrentExp(int _value)
+{
+	currentExp += _value;
+	if (currentExp >= reqExp)
+	{
+		LevelUp();
 	}
 }
 

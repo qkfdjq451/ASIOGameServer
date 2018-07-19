@@ -26,7 +26,7 @@ public:
 	void Tick() override;
 	void EndPlay() override;
 	
-	std::shared_ptr<flatbuffers::FlatBufferBuilder> Make_FBB_All_Monster();
+	int Make_FBB_All_Monster(vector<std::shared_ptr<flatbuffers::FlatBufferBuilder>>&fbbArray, int slice = 10);
 	void SetMovable(bool _b) { bMovable = _b; }
 	void Add_Spawn_Monster(const MonsterSpawnDesc& desc);
 	

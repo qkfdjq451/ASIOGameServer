@@ -22,13 +22,16 @@
 
 #include "./FlatBuffer/FB_Slot_generated.h"
 #include "./FlatBuffer/FB_Inventory_generated.h"
+#include "./FlatBuffer/FB_Exp_generated.h"
 
 enum class Packet_Symbal : unsigned short
 {
 	//로그인, 케릭터 선택 관련
 	REQ_SELECT_CHARACTER,
 	CON_SELECT_CHARACTER,
-	
+
+	//더미 케릭터 로그인 요청
+	REQ_DUMMIY_CHARACTER,
 
 	//맵 채널 이동 관련
 	REQ_ENTER_MAP,
@@ -48,7 +51,7 @@ enum class Packet_Symbal : unsigned short
 	REQ_CHARACTER_LIST,
 	REQ_MONSTER_LIST,
 
-	//케릭터 
+	//케릭터 접속 나감 관련
 	ENTER_NEW_CHARACTER,
 	ENTER_NEW_CHARACTER_VECTOR,
 
@@ -58,6 +61,10 @@ enum class Packet_Symbal : unsigned short
 	//캐릭터 이동관련
 	MOVING,
 	MOVING_VECTOR,
+
+	//캐릭터 능력치 & 경험치 관련
+	CHANGE_STATUS,
+	CHANGE_EXP,
 
 	//몬스터 관련
 	RESPAWN_MONSTER,
@@ -82,7 +89,7 @@ enum class Packet_Symbal : unsigned short
 	CON_PORTAL,
 
 	//게임
-	
+
 
 
 	TEST

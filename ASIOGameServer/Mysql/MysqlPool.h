@@ -31,6 +31,7 @@ public:
 private:
 	MYSQL* createOneConnect();
 	MYSQL* getOneConnect();
+	MYSQL* getContinueConnect();
 	void close(MYSQL* conn);
 	bool isEmpty();
 	MYSQL* poolFront();

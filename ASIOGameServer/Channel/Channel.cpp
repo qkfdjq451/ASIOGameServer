@@ -120,20 +120,30 @@ bool Channel::InsertCharacter(std::shared_ptr<class Character> character)
 				auto monsterMng = GetComponent<MonsterManager>();
 				if (monsterMng)
 				{
-					auto fbb3 = monsterMng->Make_FBB_All_Monster();
-
-					auto monsterVec = FB::GetMonsterVec(fbb3->GetBufferPointer());
-					auto mv = monsterVec->monvector();
-
-					session->PushSend(PS::RESPAWN_MONSTER_VEC, fbb3);
-					printf("몬스터 정보 보내기!\n");
+					vector<std::shared_ptr<flatbuffers::FlatBufferBuilder>> fbbArray;
+					int total = monsterMng->Make_FBB_All_Monster(fbbArray);
+					if (total != 0)
+					{
+						for (auto fbb3 : fbbArray)
+						{
+							auto monsterVec = FB::GetMonsterVec(fbb3->GetBufferPointer());
+							auto mv = monsterVec->monvector();
+							session->PushSend(PS::RESPAWN_MONSTER_VEC, fbb3);
+						}
+					}
 				}
 			}
 		}
-
-		auto fbb2 = cm->Make_FBB_All_CharacterInfo();	
-		session->PushSend(PS::ENTER_NEW_CHARACTER_VECTOR, move(fbb2));
-
+		vector<std::shared_ptr<flatbuffers::FlatBufferBuilder>> fbbArray;
+		auto total = cm->Make_FBB_All_CharacterInfo(fbbArray);
+		if (total != 0)
+		{
+			for (auto fbb2 : fbbArray)
+			{
+				session->PushSend(PS::ENTER_NEW_CHARACTER_VECTOR, move(fbb2));
+			}
+		}
+		
 		
 		auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
 		auto nick = fbb->CreateString(character->GetName());
@@ -149,6 +159,7 @@ bool Channel::InsertCharacter(std::shared_ptr<class Character> character)
 		auto charoffset=charB.Finish();
 		fbb->Finish(charoffset);
 		cm->SendAllCharacter(PS::ENTER_NEW_CHARACTER, move(fbb));
+		printf("케릭터 정보 보내기!!\n");
 
 		return true;
 	}

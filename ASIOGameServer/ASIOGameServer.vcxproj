@@ -211,6 +211,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>../Include;../Include/cpp_redis;../Include/Navigation/DebugUtils;../Include/Navigation/Detour;../Include/Navigation/DetourCrowd;../Include/Navigation/DetourTileCache;../Include/Navigation/Recast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>Global.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

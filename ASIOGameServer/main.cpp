@@ -14,6 +14,8 @@
 
 int main(int argc, char* argv[])
 {
+	int IOThreadCount = 4;
+
 	MySQLManager::Create();
 	TimerManager::Create();
 	EventManager::Create();
@@ -27,15 +29,15 @@ int main(int argc, char* argv[])
 	try 
 	{
 		asio::io_service io_service;
-		WorkerGroup::Create(io_service);
-		
+
+		WorkerGroup::Create(io_service);		
 		server s(io_service, (short)std::atoi("8888"));
-		gm->SetTag("GameManager");
 
 		vector<thread> threads;
-		for(int i=0;i<4;i++)
+		for(int i=0;i<IOThreadCount;i++)
 			threads.push_back(thread([&] {io_service.run(); }));		
 
+		gm->SetTag("GameManager");
 		gm->Run();
 	}
 	catch (std::exception& e) 
