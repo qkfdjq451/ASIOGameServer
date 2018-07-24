@@ -65,6 +65,7 @@ enum class Packet_Symbal : unsigned short
 	//캐릭터 능력치 & 경험치 관련
 	CHANGE_STATUS,
 	CHANGE_EXP,
+	LEVEL_UP,
 
 	//몬스터 관련
 	RESPAWN_MONSTER,
@@ -79,6 +80,10 @@ enum class Packet_Symbal : unsigned short
 	REQ_DAMAGE,
 	CON_DAMAGE,
 
+	//스킬
+	REQ_SKILL,
+	CON_SKILL,
+
 	DIE,
 
 	REQ_DAMAGE_VECTOR,
@@ -88,7 +93,15 @@ enum class Packet_Symbal : unsigned short
 	REQ_PORTAL,
 	CON_PORTAL,
 
-	//게임
+	//시스템 관련
+	REQ_CHARACTER_SELECT_SCREEN,
+	CON_CHARACTER_SELECT_SCREEN,
+
+	REQ_LOGOUT,
+	CON_LOGOUT,
+	
+	REQ_ESCAPE,
+	CON_ESCAPE,
 
 
 

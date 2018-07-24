@@ -15,16 +15,21 @@ struct Inventory;
 
 struct Inventory FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
-    VT_SLOTS = 4
+    VT_SLOT_VEC = 4,
+    VT_MONEY = 6
   };
-  const flatbuffers::Vector<flatbuffers::Offset<Slot>> *slots() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Slot>> *>(VT_SLOTS);
+  const flatbuffers::Vector<flatbuffers::Offset<Slot>> *slot_vec() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Slot>> *>(VT_SLOT_VEC);
+  }
+  int32_t money() const {
+    return GetField<int32_t>(VT_MONEY, 0);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_SLOTS) &&
-           verifier.Verify(slots()) &&
-           verifier.VerifyVectorOfTables(slots()) &&
+           VerifyOffset(verifier, VT_SLOT_VEC) &&
+           verifier.Verify(slot_vec()) &&
+           verifier.VerifyVectorOfTables(slot_vec()) &&
+           VerifyField<int32_t>(verifier, VT_MONEY) &&
            verifier.EndTable();
   }
 };
@@ -32,8 +37,11 @@ struct Inventory FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 struct InventoryBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_slots(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Slot>>> slots) {
-    fbb_.AddOffset(Inventory::VT_SLOTS, slots);
+  void add_slot_vec(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Slot>>> slot_vec) {
+    fbb_.AddOffset(Inventory::VT_SLOT_VEC, slot_vec);
+  }
+  void add_money(int32_t money) {
+    fbb_.AddElement<int32_t>(Inventory::VT_MONEY, money, 0);
   }
   explicit InventoryBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -49,18 +57,22 @@ struct InventoryBuilder {
 
 inline flatbuffers::Offset<Inventory> CreateInventory(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Slot>>> slots = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Slot>>> slot_vec = 0,
+    int32_t money = 0) {
   InventoryBuilder builder_(_fbb);
-  builder_.add_slots(slots);
+  builder_.add_money(money);
+  builder_.add_slot_vec(slot_vec);
   return builder_.Finish();
 }
 
 inline flatbuffers::Offset<Inventory> CreateInventoryDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<flatbuffers::Offset<Slot>> *slots = nullptr) {
+    const std::vector<flatbuffers::Offset<Slot>> *slot_vec = nullptr,
+    int32_t money = 0) {
   return FB::CreateInventory(
       _fbb,
-      slots ? _fbb.CreateVector<flatbuffers::Offset<Slot>>(*slots) : 0);
+      slot_vec ? _fbb.CreateVector<flatbuffers::Offset<Slot>>(*slot_vec) : 0,
+      money);
 }
 
 inline const FB::Inventory *GetInventory(const void *buf) {

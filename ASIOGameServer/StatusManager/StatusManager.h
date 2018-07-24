@@ -10,6 +10,9 @@ struct StatusInfo
 	float growthHP;
 	float growthPower;
 	float growthDefense;
+	float skill1_coolingtime;
+	float skill2_coolingtime;
+	float skill3_coolingtime;
 };
 
 class StatusManager

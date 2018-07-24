@@ -142,7 +142,20 @@ bool Monster::GetDamage(std::shared_ptr<class Character> attacker, FB::AttackSta
 		return false;
 	currentHp -= damageval;
 	if (currentHp <= 0)
+	{
 		bAlive.Set(false);
+		auto characterManager = attacker->GetCharacterManager().lock();
+		if (characterManager)
+		{
+			auto self = shared_from_this();
+			auto func = make_shared<Function<void>>(
+				[attacker, this, self]
+			{
+				attacker->AddCurrentExp(exp);
+			});
+			characterManager->Async_Function(func);
+		}
+	}
 	if (db)
 	{
 		db->add_attacker_code(attacker->GetCode());

@@ -7,6 +7,7 @@ struct MonsterInfo
 	float HP;
 	float Power;
 	float Speed;
+	int exp;
 };
 
 class MonsterBuilder

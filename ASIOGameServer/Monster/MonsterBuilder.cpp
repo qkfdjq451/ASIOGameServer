@@ -21,6 +21,7 @@ void MonsterBuilder::Init()
 				monster.HP = (float)stof(info[2].second);
 				monster.Power = (float)stof(info[3].second);
 				monster.Speed = (float)stof(info[4].second);
+				monster.exp = (float)stoi(info[5].second);
 				infos.insert(make_pair(monster.code, monster));
 			}
 		}
@@ -45,6 +46,7 @@ std::shared_ptr<class Monster> MonsterBuilder::CreateMonster(int monstercode,int
 			monster->SetMaxHP(info.HP);
 			monster->SetPower(info.Power);
 			monster->SetSpeed(info.Speed);
+			monster->exp = info.exp;
 			monster->ai = InsertAI(monster);
 		}
 		return monster;

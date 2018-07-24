@@ -8,9 +8,12 @@ public:
 	//비동기 함수 (외부 쓰레드에서 호출시 반드시 위에 함수로 호출)
 	void Async_InsertCharacter(std::shared_ptr<class Character> character);
 	void Async_EraseCharacter(int key);
+	void Async_Func(function<void()> func);
 
 	int GetNumber() { return number; }
 	int GetMapCode() { return mapCode; }
+
+	void Escape(shared_ptr<Character> character);
 
 	void BeginPlay() override;
 	void PrevTick();
@@ -27,6 +30,7 @@ private:
 
 	std::vector<std::shared_ptr<class Character>> req_Insert_list;
 	std::vector<int> req_erase_list;
+	std::vector<function<void()>> req_func_list;
 
 	//삭제처리시 사용할 함수와 변수
 public:

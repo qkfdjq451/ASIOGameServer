@@ -19,7 +19,8 @@ private:
 
 public:
 	void Async_Function(std::shared_ptr<Func> func);
-	void DamageProcess(shared_ptr<char[]> data,shared_ptr<class Character> character);
+	void DamageProcessVector(shared_ptr<char[]> data,shared_ptr<class Character> character);
+	void DamageProcess(shared_ptr<char[]> data, shared_ptr<class Character> character);
 
 	void BeginPlay() override;
 	void PrevTick();

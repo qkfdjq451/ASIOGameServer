@@ -20,6 +20,7 @@ public:
 
 	shared_ptr<flatbuffers::FlatBufferBuilder> Make_Inventory_FBB();
 private:
+	int money;
 	int maxSlotCount;
 	std::map<int, shared_ptr<Slot>> slots;
 };

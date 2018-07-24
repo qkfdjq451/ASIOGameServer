@@ -47,7 +47,7 @@ void MonsterManager::Async_Function(std::shared_ptr<Func> func)
 	});
 }
 
-void MonsterManager::DamageProcess(shared_ptr<char[]> data, shared_ptr<class Character> character)
+void MonsterManager::DamageProcessVector(shared_ptr<char[]> data, shared_ptr<class Character> character)
 {
 	auto damageTable = FB::GetDamageVec(data.get());
 	auto damageVecter = damageTable->damagevector();
@@ -63,7 +63,7 @@ void MonsterManager::DamageProcess(shared_ptr<char[]> data, shared_ptr<class Cha
 		bool retval = monster->CheckRange(character, damage->attackType());
 		if (retval == false)
 		{
-			cout << "사거리 XXXXXXX" << endl;
+			printf("사거리 XXXXXXX\n");
 			continue;
 		}
 		FB::DamageBuilder damageB = FB::DamageBuilder(*fbb);
@@ -84,6 +84,33 @@ void MonsterManager::DamageProcess(shared_ptr<char[]> data, shared_ptr<class Cha
 	auto cm = channel->GetComponent<CharacterManager>();
 	if (!cm) return;
 	cm->Async_SendAllCharacter(PS::CON_DAMAGE_VECTOR, fbb);
+}
+
+void MonsterManager::DamageProcess(shared_ptr<char[]> data, shared_ptr<class Character> character)
+{
+	auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>();
+	auto damage = FB::GetDamage(data.get());
+	auto result = monsters.find(damage->damaged_code());
+	if (result == monsters.end()) return;
+	auto monster = result->second.lock();
+	if (!monster) return;
+	bool retval = monster->CheckRange(character, damage->attackType());
+	if (retval == false)
+	{
+		printf("사거리 XXXXXXX\n");
+		return;
+	}
+	FB::DamageBuilder damageB = FB::DamageBuilder(*fbb);
+	retval = monster->GetDamage(character, damage->attackType(), &damageB);
+	if (retval)
+	{
+		fbb->Finish(damageB.Finish());
+		auto channel = GetParentComponent<Channel>();
+		if (!channel) return;
+		auto cm = channel->GetComponent<CharacterManager>();
+		if (!cm) return;
+		cm->Async_SendAllCharacter(PS::CON_DAMAGE, fbb);
+	}
 }
 
 void MonsterManager::BeginPlay()

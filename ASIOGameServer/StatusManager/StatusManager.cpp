@@ -14,7 +14,9 @@ bool StatusManager::SetStatus(std::shared_ptr<class Character> character)
 	character->SetDefense(level*result->second.growthDefense + result->second.baseDefense);
 	character->SetPower(level*result->second.growthPower + result->second.basePower);
 	character->SetSpeed(result->second.baseSpeed);
-
+	character->SetSkillCooltime(1, result->second.skill1_coolingtime);
+	character->SetSkillCooltime(2, result->second.skill2_coolingtime);
+	character->SetSkillCooltime(3, result->second.skill3_coolingtime);
 	
 	return true;
 }

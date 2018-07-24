@@ -52,22 +52,6 @@ int main(int argc, char* argv[])
 	MySQLManager::Delete();
 	return 0;
 	
-	//MysqlPool *mysql = MysqlPool::getMysqlPoolObject();
-	//mysql->setParameter("35.201.212.220", "leedongin", "1234", "testdb", 0, NULL, 0, 2);
-	//mysql->executeSql("INSERT INTO user(ID, Password, NickName) VALUES('qweasd', '2222', '°í²þÀÌ¾ç!!')");
-	//std::map<const std::string, std::vector<const char*> > m = mysql->executeSql("select * from user");
-	//for (std::map<const std::string, std::vector<const char*> >::iterator it = m.begin(); it != m.end(); ++it) {
-	//	std::cout << it->first << std::endl;
-	//	const std::string field = it->first;
-	//	for (size_t i = 0; i < m[field].size(); i++)
-	//	{
-	//		//printf("%s\n", m[field][i]);
-	//		std::cout << m[field][i] << std::endl;
-	//	}
-	//}
-
-	//delete mysql;
-
 	//mongoc_client_t			*client;
 	//mongoc_collection_t	*collection;
 	//bson_error_t				error;

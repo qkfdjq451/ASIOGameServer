@@ -77,6 +77,14 @@ void MapInfo::BeginPlay()
 
 		portals.insert(make_pair(pt.gateNumber, pt));
 	}
+
+	char query2[128];
+	snprintf(query2, 128, "Select * From EscapeCoordinates Where EscapeCoordinates.Mapcode =(%d);", mapCode);
+	auto vec2 = MySQLManager::Get()->Query_Vector(query2);
+	for (auto row : vec2)
+	{		
+		escapeCoordinates = Vector3(row[1].second, row[2].second, row[3].second);
+	}
 }
 
 void MapInfo::PrevTick()
@@ -86,10 +94,9 @@ void MapInfo::PrevTick()
 	{
 		auto channel = iter->second.lock();
 		if (!channel)
-		{
-			channel->Distroy();
+		{			
 			printf("%d Ã¤³Î »èÁ¦ µÊ\n", iter->first);
-			channels.erase(iter++);
+			iter = channels.erase(iter);
 			continue;
 		}
 		auto cm = channel->GetComponent<CharacterManager>();
@@ -100,7 +107,7 @@ void MapInfo::PrevTick()
 			{
 				channel->Distroy();
 				printf("%d Ã¤³Î »èÁ¦ µÊ\n", iter->first);
-				channels.erase(iter++);
+				iter=channels.erase(iter);
 				continue;
 			}
 		}

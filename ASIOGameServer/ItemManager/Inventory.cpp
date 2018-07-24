@@ -39,11 +39,12 @@ void Inventory::SetInventory(int characterCode)
 		{
 			std::map<int, int> userItemKey_slot;
 			//
+			money = stoi(vec[0][1].second);
 			for (auto row : vec)
 			{
 				for (int i = 1; i <= maxSlotCount; i++)
 				{					
-					int useritemkey = stoi(row[i].second);
+					int useritemkey = stoi(row[i+1].second);
 					if (useritemkey != 0)
 					{
 						slots[i] = make_shared<Slot>();
@@ -121,7 +122,8 @@ shared_ptr<flatbuffers::FlatBufferBuilder> Inventory::Make_Inventory_FBB()
 	}
 	auto slot_vector_offset = fbb->CreateVector(slot_vector);
 	auto InventoryB = FB::InventoryBuilder(*fbb);
-	InventoryB.add_slots(slot_vector_offset);
+	InventoryB.add_slot_vec(slot_vector_offset);
+	InventoryB.add_money(money);
 	fbb->Finish(InventoryB.Finish());
 
 	return fbb;

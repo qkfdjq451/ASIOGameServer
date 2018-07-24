@@ -115,7 +115,6 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 	//					auto fbb = monsterMng->Make_FBB_All_Monster();
 	//					auto monsterVec = FB::GetMonsterVec(fbb->GetBufferPointer());
 	//					auto mv = monsterVec->monvector();
-
 	//					ss->PushSend(PS::RESPAWN_MONSTER_VEC, fbb);
 	//				});
 	//				monsterMng->Async_Function(func);
@@ -183,6 +182,46 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 		}
 	}
 	break;
+	case PS::REQ_SKILL:
+	{
+		auto ss = session.lock();
+		auto user = ss->GetUser().lock();
+		if (ss != nullptr&&user != nullptr&&user->GetCharacter() != nullptr)
+		{
+			auto attack = FB::GetAttack(recv_data);
+			auto channel = GetChannel(user->GetCharacter());
+			if (channel)
+			{
+				auto cm = channel->GetComponent<CharacterManager>();
+				auto fbb = make_shared<flatbuffers::FlatBufferBuilder>();
+				auto attackb = FB::AttackBuilder(*fbb);
+				attackb.add_code(attack->code());
+				attackb.add_yaw(attack->yaw());
+				attackb.add_state(attack->state());
+				fbb->Finish(attackb.Finish());
+				cm->Async_SendAllCharacter(PS::CON_SKILL, fbb);
+			}
+		}
+	}
+	break;
+	case PS::REQ_DAMAGE:
+	{
+		auto ss = session.lock();
+		auto user = ss->GetUser().lock();
+		if (ss != nullptr&&user != nullptr&&user->GetCharacter() != nullptr)
+		{
+			shared_ptr<char[]> data(new char[size], std::default_delete<char[]>());
+			memcpy(data.get(), recv_data, size);
+			auto channel = GetChannel(user->GetCharacter());
+			if (!channel) return;
+			auto mm = channel->GetComponent<MonsterManager>();
+			if (!mm) return;
+			auto func = make_shared<Function<void>>
+				(std::bind(&MonsterManager::DamageProcess, mm, data, user->GetCharacter()));
+			mm->Async_Function(func);
+		}
+		break;
+	}
 	case PS::REQ_DAMAGE_VECTOR:
 	{
 		auto ss = session.lock();
@@ -196,12 +235,11 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 			auto mm = channel->GetComponent<MonsterManager>();
 			if(!mm) return;
 			auto func = make_shared<Function<void>>
-				(std::bind(&MonsterManager::DamageProcess, mm, data, user->GetCharacter()));
+				(std::bind(&MonsterManager::DamageProcessVector, mm, data, user->GetCharacter()));
 			mm->Async_Function(func);
 		}
 	}
 	break;
-
 	case PS::REQ_PORTAL:
 	{
 		cout << "Æ÷Å» ¿äÃ»!" << endl;
@@ -214,21 +252,16 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 			Component::GetComponents_For_Tag("MapManager", vec);
 			auto mm = dynamic_pointer_cast<MapManager>(vec[0]);
 			if (!mm) return;
-			cout << "¸Ê ¸Å´ÏÀú!" << endl;
 			auto mapinfo = mm->GetMapInfo(user->GetCharacter()->GetMapKey());
 			if (!mapinfo) return;
-			cout << "¸Ê Á¤º¸!" << endl;
 			auto portal = mapinfo->GetPortal(portalTable->gateNumber());
 			if (!portal) return;
-			cout << "Æ÷Å»!" << endl;
 			if (portal->destCode != portalTable->currentMapCode())
 			{
 				user->GetCharacter()->SetWarpLocateDestination(portal->position);
 				user->GetCharacter()->SetPosition(portal->position);
 				user->GetCharacter()->SetMapKey(portal->destCode);
 				//auto changed_mapinfo = mm->GetMapInfo(user->GetCharacter()->GetMapKey());
-
-
 			}
 			
 			if (portalTable->destinationMapCode() == user->GetCharacter()->GetMapKey())
@@ -239,7 +272,21 @@ void InGameState::On_Read(const PS& symbol, void* recv_data, unsigned short size
 		}
 	}
 	break;
+	case PS::REQ_ESCAPE:
+	{
+		auto ss = session.lock();
+		auto user = ss->GetUser().lock();
+		if (ss != nullptr&&user != nullptr && user->GetCharacter() != nullptr)
+		{
+			auto cm = user->GetCharacter()->GetCharacterManager().lock();
+			if (!cm) return;
+			auto channel =cm->GetParentComponent<Channel>();
+			if (!channel) return;
+			channel->Async_Func(bind(&Channel::Escape, channel, user->GetCharacter()));
+		}
 
+		break;
+	}
 	case PS::PING_TEST:
 	{
 		auto ss = session.lock();

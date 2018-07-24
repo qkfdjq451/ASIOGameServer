@@ -35,6 +35,30 @@ void Channel::Async_EraseCharacter(int key)
 	});
 }
 
+void Channel::Async_Func(function<void()> func)
+{
+	auto self = shared_from_this();
+	async(std::launch::async, [self, this, func]
+	{
+		std::lock_guard<std::mutex> lock(mt);
+		req_func_list.push_back(func);
+	});
+}
+
+
+void Channel::Escape(shared_ptr<Character> character)
+{
+	auto mapinfo = GetParentComponent<MapInfo>();
+	if (!mapinfo) return;
+	character->SetPosition(mapinfo->GetEscapeCoordinates());
+	auto cm = character->GetCharacterManager().lock();
+	auto fbb = make_shared<flatbuffers::FlatBufferBuilder>();
+	auto moveB = FB::MoveBuilder(*fbb);
+	moveB.add_code(character->GetCode());
+	moveB.add_position(&character->GetPosition().ToFBVector3());
+	fbb->Finish(moveB.Finish());
+	cm->Async_SendAllCharacter(PS::CON_ESCAPE, move(fbb));
+}
 
 void Channel::BeginPlay()
 {	
@@ -43,7 +67,8 @@ void Channel::BeginPlay()
 	{
 		cm->SetMovable(true);
 		Attach(cm);
-	}	
+	}
+
 	auto mapInfo = GetParentComponent<MapInfo>();	
 	if (mapInfo!=nullptr )
 	{
@@ -67,13 +92,15 @@ void Channel::PrevTick()
 {
 	std::vector<int> copy_erase_list;
 	std::vector<std::shared_ptr<class Character>> copy_Insert_list;
-
+	std::vector<function<void()>> copy_func_list;
 	{
 		std::lock_guard<std::mutex> lock(mt);
 		copy_erase_list.assign(req_erase_list.begin(), req_erase_list.end());
 		copy_Insert_list.assign(req_Insert_list.begin(), req_Insert_list.end());
+		copy_func_list.assign(req_func_list.begin(), req_func_list.end());
 		req_erase_list.clear();
 		req_Insert_list.clear();
+		req_func_list.clear();
 	}
 
 	for (auto erase : copy_erase_list)
@@ -85,7 +112,10 @@ void Channel::PrevTick()
 	{
 		InsertCharacter(insert);
 	}
-
+	for (auto func : copy_func_list)
+	{
+		func();
+	}
 }
 
 void Channel::Tick()
@@ -101,11 +131,14 @@ void Channel::EndPlay()
 
 bool Channel::InsertCharacter(std::shared_ptr<class Character> character)
 {
-	character->bMove = false;
-	character->bChangePosition = false;
+	character->SetMoveCancel();
 	character->SetWarpPosition();
 
 	auto cm = Component::GetComponent<CharacterManager>();
+	if (!cm)
+	{
+		printf("실패 \n");
+	}
 	bool result = cm->InsertCharacter(character);
 	if(result)
 	{
@@ -143,21 +176,8 @@ bool Channel::InsertCharacter(std::shared_ptr<class Character> character)
 				session->PushSend(PS::ENTER_NEW_CHARACTER_VECTOR, move(fbb2));
 			}
 		}
-		
-		
-		auto fbb = std::make_shared<flatbuffers::FlatBufferBuilder>(BUFSIZE);
-		auto nick = fbb->CreateString(character->GetName());
-		auto charB = FB::CharacterBuilder(*fbb);
-		charB.add_code(character->GetCode());
-		charB.add_type(character->GetTypeCode());
-		charB.add_hp(character->GetMaxHP());
-		charB.add_level(character->GetLevel());
-		charB.add_nick(nick);
-		charB.add_power(character->GetPower());
-		charB.add_speed(character->GetSpeed());		
-		charB.add_position(&character->GetPosition().ToFBVector3());
-		auto charoffset=charB.Finish();
-		fbb->Finish(charoffset);
+
+		auto fbb = character->Make_Fbb_Character();
 		cm->SendAllCharacter(PS::ENTER_NEW_CHARACTER, move(fbb));
 		printf("케릭터 정보 보내기!!\n");
 
@@ -170,6 +190,8 @@ bool Channel::InsertCharacter(std::shared_ptr<class Character> character)
 bool Channel::EraseCharacter(int key)
 {
 	auto cm = Component::GetComponent<CharacterManager>();
+	auto character = cm->GetCharacter(key);
+	
 	bool result = cm->EraseCharacter(key);
 	if (result)
 	{
@@ -178,6 +200,7 @@ bool Channel::EraseCharacter(int key)
 		charB.add_code(key);
 		auto charoffset = charB.Finish();
 		fbb->Finish(charoffset);
+				
 		cm->SendAllCharacter(PS::LEAVE_CHARACTER, move(fbb));
 		return true;
 	}	

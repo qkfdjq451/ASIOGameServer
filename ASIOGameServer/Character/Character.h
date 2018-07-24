@@ -61,6 +61,7 @@ public:
 
 	void SetWarpLocateDestination(Vector3 _pos) { warpLocateDestination = _pos; }
 	void SetWarpPosition() { warpLocateDestination = position; }
+	void SetMoveCancel();
 
 	void SetStartPoint(int _key) { startPointKey = _key; }
 	int GetStartPoint() { return startPointKey; }
@@ -73,6 +74,13 @@ public:
 	int GetReqExp() { return reqExp; }
 	int GetCurrentExp() { return currentExp; }
 
+	//packet 생성 함수
+	std::shared_ptr<flatbuffers::FlatBufferBuilder>  Make_Fbb_Character();
+	std::shared_ptr<flatbuffers::FlatBufferBuilder>  Make_Fbb_Exp();
+
+	//스킬 쿨타임 체크
+	bool CheckCoolTime(int skillNumber);
+	bool SetSkillCooltime(int skillNumber, float time);
 protected:
 	int code;
 	enum FB::CharacterType characterTypeCode;
@@ -109,4 +117,11 @@ protected:
 
 	//아이템 관련
 	std::shared_ptr<class Inventory> inventory;
+
+	//스킬 관련
+	shared_ptr<std::chrono::time_point<std::chrono::system_clock>> skill_lastTime[4];
+
+
+	float skill_cooltime[4];
+	
 };

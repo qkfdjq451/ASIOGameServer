@@ -31,9 +31,10 @@ public:
 	std::shared_ptr<class Navigation> GetNavi() { return navi; }
 	Portal* GetPortal(int gateNumber);
 	std::string GetLevelName() { return LevelName; }
-
+	Vector3 GetEscapeCoordinates() { return escapeCoordinates; }
 private:
 	int mapCode;
+	Vector3 escapeCoordinates;
 	std::string mapName;
 	std::string LevelName;
 	MapType mapType;

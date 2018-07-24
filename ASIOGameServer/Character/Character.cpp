@@ -20,6 +20,11 @@ Character::Character(std::shared_ptr<class User> user, int code)
 	mapKey.Set(0);
 	channel.Set(0);
 	inventory = make_shared<Inventory>();
+	for (int i = 0; i < 4; i++)
+	{
+		skill_lastTime[i]=nullptr;
+		skill_cooltime[i] = 0;
+	}
 }
 
 Character::~Character()
@@ -86,7 +91,11 @@ void Character::Init()
 			if (mm)
 			{
 				auto mapinfo = mm->GetMapInfo(mapKey.Get());
-				mapinfo->GetChannel(channel)->Async_EraseCharacter(code);				
+				auto ch = mapinfo->GetChannel(channel);
+				if (ch)
+				{
+					ch->Async_EraseCharacter(code);
+				}
 			}
 		}
 	});
@@ -165,10 +174,32 @@ void Character::GetMoveInfo(std::shared_ptr<flatbuffers::FlatBufferBuilder> fbb,
 	}
 }
 
+void Character::SetMoveCancel()
+{
+	bChangePosition = false;
+	bMove = false;
+	forward = Vector3(0, 0, 0);
+}
+
 bool Character::LevelUp()
 {
 	currentExp -= reqExp;
+	level++;
 	StatusManager::Get()->SetStatus(shared_from_this());
+	auto characterManager = cm.lock();
+	if (characterManager)
+	{
+		auto self = shared_from_this();
+		{
+			auto func = make_shared<Function<void>>(
+				[characterManager,this, self]
+			{								
+				auto fbb = Make_Fbb_Character();
+				characterManager->Async_SendAllCharacter(PS::LEVEL_UP, fbb);							
+			});			
+			characterManager->Async_Function(func);
+		}
+	}
 	return true;
 }
 
@@ -179,5 +210,81 @@ void Character::AddCurrentExp(int _value)
 	{
 		LevelUp();
 	}
+	auto user_shared = user.lock();
+	if (!user_shared) return;
+	auto session_shared = user_shared->GetSesstion().lock();
+	if (!session_shared) return;
+	{
+		auto fbb = Make_Fbb_Exp();
+		session_shared->PushSend(PS::CHANGE_EXP, fbb);
+	}
+}
+
+std::shared_ptr<flatbuffers::FlatBufferBuilder> Character::Make_Fbb_Character()
+{
+	auto fbb = make_shared< flatbuffers::FlatBufferBuilder >();
+	auto nick = fbb->CreateString(GetName());
+	auto charB = FB::CharacterBuilder(*fbb);
+
+	charB.add_code(GetCode());
+	charB.add_type((FB::CharacterType)GetTypeCode());
+	charB.add_nick(nick);
+	charB.add_level(GetLevel());
+	charB.add_position(&GetPosition().ToFBVector3());
+	charB.add_hp(GetMaxHP());
+	charB.add_power(GetPower());
+	charB.add_speed(GetSpeed());
+	charB.add_mapcode(GetMapKey());
+	auto offsetchar = charB.Finish();
+	fbb->Finish(offsetchar);
+	return fbb;
+}
+
+std::shared_ptr<flatbuffers::FlatBufferBuilder> Character::Make_Fbb_Exp()
+{
+	auto fbb = make_shared< flatbuffers::FlatBufferBuilder >();	
+	auto expB = FB::ExpBuilder(*fbb);
+	expB.add_currentExp(currentExp);
+	expB.add_reqExp(reqExp);	
+	auto offset = expB.Finish();
+	fbb->Finish(offset);
+	return fbb;
+}
+
+bool Character::CheckCoolTime(int skillNumber)
+{
+	if (skillNumber > 0 && skillNumber < 4)
+	{
+		if (skill_lastTime[skillNumber]==nullptr)
+		{
+			skill_lastTime[skillNumber] = make_shared<std::chrono::time_point<std::chrono::system_clock>>(std::chrono::system_clock::now());
+			return true;
+		}
+		else
+		{
+			std::chrono::duration<float> spendTime = std::chrono::system_clock::now()-(*skill_lastTime[skillNumber]);
+			if (skill_cooltime[skillNumber] <= spendTime.count())
+			{
+				*skill_lastTime[skillNumber] = std::chrono::system_clock::now();
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+	}
+	return false;
+}
+
+bool Character::SetSkillCooltime(int skillNumber, float time)
+{
+	if (skillNumber > 0 && skillNumber < 4)
+	{
+		skill_cooltime[skillNumber] = time;
+		return true;
+	}
+	return false;
 }
 

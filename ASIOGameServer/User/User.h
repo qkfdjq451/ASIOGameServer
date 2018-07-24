@@ -23,8 +23,9 @@ private:
 	std::weak_ptr<class Session> session;
 
 public:
+	bool ClearCharacter();
+	std::shared_ptr<class Character> LoadCharacterInfo(int characterCode);
 	std::shared_ptr<class Character> GetCharacter() { return character; }	
-	void SetCharacer(std::shared_ptr<class Character> _character) { character = _character; }
 private:
 	std::shared_ptr<class Character> character;
 	

@@ -102,6 +102,7 @@ protected:
 	int code;					//몬스터 키
 	int monsterNumber;		//몬스터 식별 번호
 
+	int exp;
 	std::string nickname;
 
 	//생존, 채력, 리스폰
@@ -118,6 +119,7 @@ protected:
 	float power;
 	float speed;
 	Vector3 position;
+
 
 
 	std::weak_ptr<class Navigation> navi;

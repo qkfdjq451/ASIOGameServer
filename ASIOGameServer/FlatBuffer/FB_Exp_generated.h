@@ -10,9 +10,9 @@
 
 namespace FB {
 
-struct Map;
+struct Exp;
 
-struct Map FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct Exp FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_CURRENTEXP = 4,
     VT_REQEXP = 6
@@ -31,64 +31,64 @@ struct Map FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
 };
 
-struct MapBuilder {
+struct ExpBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
   void add_currentExp(int32_t currentExp) {
-    fbb_.AddElement<int32_t>(Map::VT_CURRENTEXP, currentExp, 0);
+    fbb_.AddElement<int32_t>(Exp::VT_CURRENTEXP, currentExp, 0);
   }
   void add_reqExp(int32_t reqExp) {
-    fbb_.AddElement<int32_t>(Map::VT_REQEXP, reqExp, 0);
+    fbb_.AddElement<int32_t>(Exp::VT_REQEXP, reqExp, 0);
   }
-  explicit MapBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ExpBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  MapBuilder &operator=(const MapBuilder &);
-  flatbuffers::Offset<Map> Finish() {
+  ExpBuilder &operator=(const ExpBuilder &);
+  flatbuffers::Offset<Exp> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<Map>(end);
+    auto o = flatbuffers::Offset<Exp>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<Map> CreateMap(
+inline flatbuffers::Offset<Exp> CreateExp(
     flatbuffers::FlatBufferBuilder &_fbb,
     int32_t currentExp = 0,
     int32_t reqExp = 0) {
-  MapBuilder builder_(_fbb);
+  ExpBuilder builder_(_fbb);
   builder_.add_reqExp(reqExp);
   builder_.add_currentExp(currentExp);
   return builder_.Finish();
 }
 
-inline const FB::Map *GetMap(const void *buf) {
-  return flatbuffers::GetRoot<FB::Map>(buf);
+inline const FB::Exp *GetExp(const void *buf) {
+  return flatbuffers::GetRoot<FB::Exp>(buf);
 }
 
-inline const FB::Map *GetSizePrefixedMap(const void *buf) {
-  return flatbuffers::GetSizePrefixedRoot<FB::Map>(buf);
+inline const FB::Exp *GetSizePrefixedExp(const void *buf) {
+  return flatbuffers::GetSizePrefixedRoot<FB::Exp>(buf);
 }
 
-inline bool VerifyMapBuffer(
+inline bool VerifyExpBuffer(
     flatbuffers::Verifier &verifier) {
-  return verifier.VerifyBuffer<FB::Map>(nullptr);
+  return verifier.VerifyBuffer<FB::Exp>(nullptr);
 }
 
-inline bool VerifySizePrefixedMapBuffer(
+inline bool VerifySizePrefixedExpBuffer(
     flatbuffers::Verifier &verifier) {
-  return verifier.VerifySizePrefixedBuffer<FB::Map>(nullptr);
+  return verifier.VerifySizePrefixedBuffer<FB::Exp>(nullptr);
 }
 
-inline void FinishMapBuffer(
+inline void FinishExpBuffer(
     flatbuffers::FlatBufferBuilder &fbb,
-    flatbuffers::Offset<FB::Map> root) {
+    flatbuffers::Offset<FB::Exp> root) {
   fbb.Finish(root);
 }
 
-inline void FinishSizePrefixedMapBuffer(
+inline void FinishSizePrefixedExpBuffer(
     flatbuffers::FlatBufferBuilder &fbb,
-    flatbuffers::Offset<FB::Map> root) {
+    flatbuffers::Offset<FB::Exp> root) {
   fbb.FinishSizePrefixed(root);
 }
 
